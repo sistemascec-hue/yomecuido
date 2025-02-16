@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {doc, setDoc, serverTimestamp} from "firebase/firestore"
 export default function useAuth() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -87,26 +88,59 @@ export default function useAuth() {
 
   //   return { login, register, errors, authError, loading };
 
-  const register = async (
-    email,
-    password,
-    username,
-    confirmPassword,
-    onSuccess
-  ) => {
-    if (!validateInputs({ email, password, username, confirmPassword })) return;
-    setLoading(true);
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      await AsyncStorage.setItem(
-        "registrationSuccess",
-        "Registro exitoso. Por favor, inicia sesión"
-      );
-      onSuccess();
-    } catch (error) {
-      setAuthError(error.message);
-    }
-    setLoading(false);
-  };
-  return { login, register, errors, authError, loading };
+//   const register = async (
+//     email,
+//     password,
+//     username,
+//     confirmPassword,
+//     onSuccess
+//   ) => {
+//     if (!validateInputs({ email, password, username, confirmPassword })) return;
+//     setLoading(true);
+//     try {
+//       // crear usuario en firebase authentication
+//       await createUserWithEmailAndPassword(auth, email, password);
+//       await AsyncStorage.setItem(
+//         "registrationSuccess",
+//         "Registro exitoso. Por favor, inicia sesión"
+//       );
+//       onSuccess();
+//     } catch (error) {
+//       setAuthError(error.message);
+//     }
+//     setLoading(false);
+//   };
+//   return { login, register, errors, authError, loading };
+// }
+
+// creando con firestore y firebase authentication
+const register = async (email, password, username, confirmPassword, onSuccess) => {
+  if (!validateInputs({ email, password, username, confirmPassword })) return;
+
+  setLoading(true);
+  try {
+    // Crear usuario en Firebase Authentication
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    // Guardar datos en Firestore
+    await setDoc(doc(db, "users", user.uid), {
+      username,
+      email,
+      createdAt: serverTimestamp(), // Guardar fecha de registro
+    });
+
+    // Guardando el mensaje de exito
+    await AsyncStorage.setItem(
+      "registrationSuccess",
+      "Registro exitoso, Por favor, inicia sesión"
+    );
+
+    onSuccess(); // Redirigir al login tras el registro exitoso
+  } catch (error) {
+    setAuthError(error.message);
+  }
+  setLoading(false);
+};
+return { login, register, errors, authError, loading };
 }
