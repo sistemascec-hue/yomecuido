@@ -112,11 +112,12 @@ const styles = StyleSheet.create({
   text: {
     color: colors.light.highlight,
     textAlign: "center",
-    marginBottom: 10,
+    
+    marginVertical: 10
   },
   logo: {
-    height: 350,
-    width: 400,
+    height: 150,
+    width: 250,
   },
   button: {
     backgroundColor: colors.light.buttonBackground,

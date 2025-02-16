@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { auth } from "../firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function useAuth() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -13,7 +16,8 @@ export default function useAuth() {
 
     if (username !== undefined) {
       if (!username || username.length < 3) {
-        newErrors.username = "El nombre de usuario debe tener al menos 3 caracteres.";
+        newErrors.username =
+          "El nombre de usuario debe tener al menos 3 caracteres.";
       }
     }
 
@@ -67,19 +71,42 @@ export default function useAuth() {
   };
 
   // Función para registrar usuario
-  const register = async (email, password, username, confirmPassword, onSuccess) => {
-    if (!validateInputs({ email, password, username, confirmPassword }))
-        return;
+  //   const register = async (email, password, username, confirmPassword, onSuccess) => {
+  //     if (!validateInputs({ email, password, username, confirmPassword }))
+  //         return;
 
+  //     setLoading(true);
+  //     try {
+  //       await createUserWithEmailAndPassword(auth, email, password);
+  //       onSuccess();
+  //     } catch (error) {
+  //       setAuthError(error.message);
+  //     }
+  //     setLoading(false);
+  //   };
+
+  //   return { login, register, errors, authError, loading };
+
+  const register = async (
+    email,
+    password,
+    username,
+    confirmPassword,
+    onSuccess
+  ) => {
+    if (!validateInputs({ email, password, username, confirmPassword })) return;
     setLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
+      await AsyncStorage.setItem(
+        "registrationSuccess",
+        "Registro exitoso. Por favor, inicia sesión"
+      );
       onSuccess();
     } catch (error) {
       setAuthError(error.message);
     }
     setLoading(false);
   };
-
   return { login, register, errors, authError, loading };
 }

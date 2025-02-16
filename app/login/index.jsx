@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,12 +15,23 @@ import globalStyles from "../../constants/globalStyles";
 import InputField from "../../components/InputField";
 import { EmailIcon, LockIcon } from "../../components/Icons";
 import Button from "../../components/Button";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
   const { login, errors, authError, loading } = useAuth();
+useEffect(() =>{
+  const checkSuccessMessage = async () => {
+    const message = await AsyncStorage.getItem("registrationSuccess");
+  if(message){
+    setSuccessMessage(message);
+    await AsyncStorage.removeItem("registrationSuccess");
+  }
+  };
+  checkSuccessMessage();
+}, []);
 
   return (
     <ImageBackground
@@ -28,6 +39,11 @@ export default function LoginScreen() {
       style={styles.background}
       resizeMode="cover"
     >
+      <View>
+        {successMessage ? (
+          <Text style={styles.successText}>{successMessage}</Text>
+        ): null}
+      </View>
       <View style={globalStyles.container}>
       <View style={styles.InputField}>
         
@@ -87,9 +103,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logo: {
-    height: 350,
+    height: 300,
     width: 400,
-    marginBottom: 10,
+
   },
   text: {
     color: colors.light.highlight,
@@ -135,6 +151,13 @@ const styles = StyleSheet.create({
   InputField:{
     justifyContent: "center",
     alignItems: "center"
+  },
+  successText:{
+    fontFamily: "sugo-trial",
+    fontSize: 20,
+    color: "#13ea01",
+    textAlign: "center"
+    
   }
 
 }); 
