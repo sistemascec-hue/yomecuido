@@ -6,7 +6,7 @@ const colors = {
     text: "#03363D", // Color de las letras principales
     secondaryText: "#1C5861", // Color de letras secundarias
     buttonText: "#FFFFFF", // Color de texto dentro de botones
-    navBarBackground: "#FFFFF", // Fondo de la barra de navegación
+    navBarBackground: "#FFFFFF", // Fondo de la barra de navegación
     textInput: "#888", // Color de los textos de los inputs 
     primary: "#2e1c42",
     secondary: "#5f087f",

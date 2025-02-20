@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-export default function GamePoint({ number, size = 50, position, onPress }) {
+
+export default function GamePoint({ number, size = 60, position, onPress }) {
   return (
     <Pressable
       style={[
@@ -35,53 +36,62 @@ export default function GamePoint({ number, size = 50, position, onPress }) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      position: "absolute",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    shadowLayer: {
-      position: "absolute",
-      width: "100%",
-      height: "100%",
-      backgroundColor: "#3D2B1F",
-      borderRadius: 15,
-      top: 5,
-      
-      shadowColor: "#000",
-      shadowOffset: { width: 4, height: 4 },
-      shadowOpacity: 0.5,
-      shadowRadius: 6,
-      elevation: 10, // Sombra más pronunciada en Android
-    },
-    button: {
-      width: "100%",
-      height: "100%",
-      borderRadius: 15,
-      alignItems: "center",
-      justifyContent: "center",
-      borderWidth: 1,
-      borderColor: "#3D2B1F", // Borde oscuro para dar profundidad
-      shadowColor: "#000",
-      shadowOffset: { width: -2, height: -2 },
-      shadowOpacity: 0.3,
-      shadowRadius: 5,
-      elevation: 5, // Segunda capa de sombra
-    },
-    lightEffect: {
-      position: "absolute",
-      top: 0,
-      width: "100%",
-      height: "40%",
-      borderTopLeftRadius: 15,
-      borderTopRightRadius: 15,
-    },
-    text: {
-      fontSize: 24,
-      fontWeight: "bold",
-      color: "#FFFFFF",
-      textShadowColor: "rgba(0, 0, 0, 0.3)",
-      textShadowOffset: { width: 2, height: 2 },
-      textShadowRadius: 3,
-    },
-  });
+  container: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    perspective: 500, // 📌 Añadir profundidad a la transformación 3D
+  },
+  shadowLayer: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#3D2B1F",
+    borderTopEndRadius: 30,
+    borderTopStartRadius: 30,
+    borderBottomEndRadius: 20,
+    borderBottomStartRadius: 20,
+    top: 5,
+    left: 0,
+    shadowColor: "#000",
+    shadowOffset: { width: 12, height: 12 }, // 📌 Ajustar sombra para efecto inclinado
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 20,
+    transform: [
+      { rotateX: "40deg" }, // 📌 Inclinación en X
+      { rotateY: "0deg" }, // 📌 Inclinación en Y
+    ],
+  },
+  button: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 30, // Hacerlo completamente redondo
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 3,
+    borderColor: "#3D2B1F", // Borde oscuro para dar profundidad
+    shadowColor: "#000",
+    transform: [
+      { rotateX: "55deg" }, // 📌 Inclinación en X
+      { rotateY: "0deg" }, // 📌 Inclinación en Y
+    ],
+  },
+  lightEffect: {
+    position: "absolute",
+    top: 0,
+    width: "100%",
+    height: "100%",
+    borderTopLeftRadius: 100,
+    borderTopRightRadius: 100,
+    borderBottomLeftRadius:20,
+    opacity: 0.9,
+
+  },
+  text: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+
+  },
+});

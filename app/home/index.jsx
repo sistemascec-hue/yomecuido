@@ -1,10 +1,18 @@
-import { Text, View, ImageBackground, SafeAreaView, StyleSheet } from "react-native";
+import {
+  Text,
+  View,
+  ImageBackground,
+  SafeAreaView,
+  StyleSheet,
+} from "react-native";
 import { Link } from "expo-router";
 import Navbar from "../../components/Navbar";
 import { auth, db } from "../../firebase";
 import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import GamePoint from "../../components/GamePoint";
+import colors from "../../theme/colors";
+
 export default function Home() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
@@ -34,27 +42,28 @@ export default function Home() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Navbar />
-
       <ImageBackground
-        source={require("../../assets/images/backgrounds/fondojueg.webp")}
+        source={require("../../assets/images/backgrounds/fondojuego.webp")}
         style={styles.background}
         resizeMode="cover"
       >
+        
+        <Navbar />
         <View style={styles.overlay}>
           {loading ? (
             <Text style={styles.loadingText}>Cargando...</Text>
           ) : (
-            <Text style={styles.welcomeText}>Hola, {username}, bienvenido a YoMeCuido</Text>
+            <Text style={styles.welcomeText}>
+              Hola {username}, bienvenido a YoMeCuido
+            </Text>
           )}
 
           {/* Puntos de juego (estáticos por ahora) */}
           <View style={styles.gamePointsContainer}>
-  <GamePoint number={1} position={{ top: "20%", left: "50%" }} />
-  <GamePoint number={2} position={{ top: "40%", left: "50%" }} />
-  <GamePoint number={3} position={{ top: "80%", left: "50%" }} />
-</View>
-
+            <GamePoint number={1} position={{ top: "86%", left: "80%" }} />
+            <GamePoint number={2} position={{ top: "76%", left: "64%" }} />
+            <GamePoint number={3} position={{ top: "80%", left: "31%" }} />
+          </View>
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -64,25 +73,21 @@ export default function Home() {
 // 🎨 Estilos mejorados
 const styles = StyleSheet.create({
   background: {
-    flex: 1,
     width: "100%",
     height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
   },
   overlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    height: "100%",
     width: "100%",
-    // backgroundColor: "rgba(0, 0, 0, 0.4)", // Efecto de oscurecimiento
   },
   welcomeText: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "bold",
+    color: "#2E1C42",
+    fontSize: 30,
+    fontFamily: "sugo-trial",
     textAlign: "center",
     marginBottom: 20,
+    backgroundColor: colors.light.highlight,
+    zIndex: 1,
   },
   loadingText: {
     color: "#fff",
@@ -90,18 +95,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   gamePointsContainer: {
-    position: "absolute",
     width: "100%",
     height: "100%",
-  },
-  gamePoint: {
-    position: "absolute",
-    width: 50,
-    height: 50,
-    backgroundColor: "#DCD7C9",
-    borderRadius: 100,
-    borderWidth: 5,
-    borderColor: "white",
+    position: 'absolute',
+    left: 0,
+
   },
   linkButton: {
     marginTop: 40,
@@ -114,4 +112,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+
 });
