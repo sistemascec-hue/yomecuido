@@ -12,10 +12,12 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import GamePoint from "../../components/GamePoint";
 import colors from "../../theme/colors";
-
+import { useRouter } from "expo-router";
 export default function Home() {
+  const router = useRouter();
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
+  const [renderTrigger, setRenderTrigger] = useState(false);
 
   // Función para obtener datos del usuario desde Firestore
   const fetchUserData = async () => {
@@ -33,6 +35,7 @@ export default function Home() {
       console.error("Error al obtener datos del usuario:", error);
     } finally {
       setLoading(false);
+      setTimeout(() => setRenderTrigger(true), 100);
     }
   };
 
@@ -41,7 +44,7 @@ export default function Home() {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.safeArea}>
       <ImageBackground
         source={require("../../assets/images/backgrounds/fondojuego.webp")}
         style={styles.background}
@@ -60,9 +63,10 @@ export default function Home() {
 
           {/* Puntos de juego (estáticos por ahora) */}
           <View style={styles.gamePointsContainer}>
-            <GamePoint number={1} position={{ top: "86%", left: "80%" }} />
-            <GamePoint number={2} position={{ top: "76%", left: "64%" }} />
-            <GamePoint number={3} position={{ top: "80%", left: "31%" }} />
+            <GamePoint number={1} position={{ top: "92%", left: "80%" }}
+            onPress={()=>router.push("/niveles/nivel1")} />
+            <GamePoint number={2} position={{ top: "82%", left: "64%" }} />
+            <GamePoint number={3} position={{ top: "85%", left: "31%" }} />
           </View>
         </View>
       </ImageBackground>
@@ -72,11 +76,17 @@ export default function Home() {
 
 // 🎨 Estilos mejorados
 const styles = StyleSheet.create({
+  safeArea:{
+    flex:1,
+    backgroundColor: "#FFFFF"
+  },
   background: {
+    flex: 1,
     width: "100%",
     height: "100%",
   },
   overlay: {
+    flex: 1,
     height: "100%",
     width: "100%",
   },
@@ -95,11 +105,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   gamePointsContainer: {
+    flex: 1,
     width: "100%",
     height: "100%",
     position: 'absolute',
-    left: 0,
-
   },
   linkButton: {
     marginTop: 40,

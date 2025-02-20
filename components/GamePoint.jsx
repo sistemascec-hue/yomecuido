@@ -1,20 +1,28 @@
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+export default function GamePoint({ number, size = 60, position }) {
+  const router = useRouter();
+  
 
-export default function GamePoint({ number, size = 60, position, onPress }) {
+  // redirigir a ña pantalla segun el numero del gamepoint
+  const handlePress = () => {
+    router.push(`/niveles/nivel${number}`);
+  };
   return (
     <Pressable
-      style={[
+      style={({pressed})=>[
         styles.container,
         {
           width: size,
           height: size,
           top: position?.top || "50%",
           left: position?.left || "50%",
+          transform: [{scale: pressed ? 0.9:1}],
         },
       ]}
-      onPress={onPress}
+      onPress={handlePress}
     >
       {/* Capa de sombra inferior para más profundidad */}
       <View style={styles.shadowLayer} />
