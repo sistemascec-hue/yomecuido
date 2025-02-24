@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import GamePoint from "../../components/GamePoint";
 import colors from "../../theme/colors";
+import fonts from "../../theme/fonts";
 import { useRouter } from "expo-router";
 export default function Home() {
   const router = useRouter();
@@ -50,13 +51,12 @@ export default function Home() {
         style={styles.background}
         resizeMode="cover"
       >
-        
         <Navbar />
         <View style={styles.overlay}>
           {loading ? (
             <Text style={styles.loadingText}>Cargando...</Text>
           ) : (
-            <Text style={styles.welcomeText}>
+            <Text style={[styles.welcomeText, fonts().title]}>
               Hola {username}, bienvenido a YoMeCuido
             </Text>
           )}
@@ -91,9 +91,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   welcomeText: {
-    color: "#2E1C42",
+    color: colors.light.buttonBackground,
     fontSize: 30,
-    fontFamily: "sugo-trial",
     textAlign: "center",
     marginBottom: 20,
     backgroundColor: colors.light.highlight,

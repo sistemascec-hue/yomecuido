@@ -11,9 +11,9 @@ import {
 import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
-import { LogoutIcon, MenuIcon } from "./Icons";
+import { LogoutIcon, MenuIcon, LinkIcon, LightlubIcon, PeopleIcon, AnchorIcon, HomeIcon } from "./Icons";
 import colors from "../theme/colors";
-
+import fonts from "../theme/fonts"
 const logo = require("../assets/images/small_logos/logo_small1.webp");
 
 export default function Navbar() {
@@ -23,11 +23,11 @@ export default function Navbar() {
 
   // Opciones del menú
   const menuOptions = [
-    { title: "Home", route: "/home" },
-    { title: "Mejoras Prácticas", route: "/mejoras" },
-    { title: "Enlaces Sospechosos", route: "/enlaces" },
-    { title: "Consejos", route: "/consejos" },
-    { title: "Sobre Nosotros", route: "/sobre-nosotros" },
+    { title: "Home", route: "/home", icon: <HomeIcon color= "white"/>  },
+    { title: "Mejoras Prácticas", route: "/mejoras", icon: <LightlubIcon color= "white"/> },
+    { title: "Enlaces Sospechosos", route: "/enlaces", icon: <LinkIcon color= "white"/> },
+    { title: "Consejos", route: "/consejos", icon: <AnchorIcon color= "white"/> },
+    { title: "Sobre Nosotros", route: "/sobre-nosotros", icon: <PeopleIcon color= "white"/> },
   ];
 
   // Altura dinámica del menú basada en el número de opciones
@@ -44,7 +44,7 @@ export default function Navbar() {
       setIsMenuOpen(true);
       Animated.timing(menuHeight, {
         toValue: totalHeight,
-        duration: 300,
+        duration: 200,
         useNativeDriver: false,
       }).start();
     }
@@ -90,7 +90,11 @@ export default function Navbar() {
                 toggleMenu(); // Cerrar el menú después de seleccionar una opción
               }}
             >
-              <Text style={styles.menuText}>{item.title}</Text>
+              <View style={styles.menuItemContent}>
+              {item.icon}
+              <Text style={[styles.menuText,fonts().button]}>{item.title}</Text>
+              </View>
+              
             </Pressable>
           ))}
         </Animated.View>
@@ -124,10 +128,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#4B0076",
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
-    overflow: "hidden",
+
   },
   menuItem: {
-    paddingVertical: 15,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: "#FFFFFF",
@@ -135,6 +139,11 @@ const styles = StyleSheet.create({
   menuText: {
     color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "bold",
+    marginLeft: 10,
   },
+  menuItemContent: {
+    flexDirection: 'row',
+    alignItems: "center",
+  },
+  
 });
