@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ImageBackground,
   Image,
+  Keyboard,
 } from "react-native";
 import { useRouter } from "expo-router";
 import useAuth from "../../hooks/useAuth";
@@ -24,82 +25,95 @@ export default function RegisterScreen() {
   const { register, errors, authError, loading } = useAuth();
 
   return (
+    <Pressable style={styles.container} onPress={Keyboard.dismiss}>
     <ImageBackground
       source={require("../../assets/images/backgrounds/background2.webp")}
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={globalStyles.container}>
-        <View style={styles.InputField}>
-          <Image
-            source={require("../../assets/images/logos/logo1.webp")}
-            style={styles.logo}
-          />
-          <Text style={[fonts().title, styles.text]}>Registro</Text>
+      
+          <View style={styles.InputField}>
+            <Image
+              source={require("../../assets/images/logos/logo1.webp")}
+              style={styles.logo}
+            />
+            <Text style={[fonts().title, styles.text]}>Registro</Text>
 
-          {authError ? <Text style={styles.errorText}>{authError}</Text> : null}
+            {authError ? (
+              <Text style={styles.errorText}>{authError}</Text>
+            ) : null}
 
-          <InputField
-            placeholder="Nombre de usuario"
-            Icon={UserIcon}
-            iconColor="#2E1C42"
-            value={username}
-            onChangeText={setUsername}
-          />
-          {errors.username && (
-            <Text style={styles.errorText}>{errors.username}</Text>
-          )}
+            <InputField
+              placeholder="Nombre de usuario"
+              Icon={UserIcon}
+              iconColor="#2E1C42"
+              value={username}
+              onChangeText={setUsername}
+            />
+            {errors.username && (
+              <Text style={styles.errorText}>{errors.username}</Text>
+            )}
 
-          <InputField
-            placeholder="Correo electrónico"
-            Icon={EmailIcon}
-            iconColor="#2E1C42"
-            value={email}
-            onChangeText={setEmail}
-          />
-          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+            <InputField
+              placeholder="Correo electrónico"
+              Icon={EmailIcon}
+              iconColor="#2E1C42"
+              value={email}
+              onChangeText={setEmail}
+            />
+            {errors.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
 
-          <InputField
-            placeholder="Contraseña"
-            Icon={LockIcon}
-            iconColor="#2E1C42"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-          {errors.password && (
-            <Text style={styles.errorText}>{errors.password}</Text>
-          )}
+            <InputField
+              placeholder="Contraseña"
+              Icon={LockIcon}
+              iconColor="#2E1C42"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+            />
+            {errors.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            )}
 
-          <InputField
-            placeholder="Confirmar contraseña"
-            Icon={LockIcon}
-            iconColor="#2E1C42"
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-          />
-          {errors.confirmPassword && (
-            <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-          )}
-          <Pressable
-            style={styles.button}
-            onPress={() =>
-              register(email, password, username, confirmPassword, () =>
-                router.push("/login")
-              )
-            }
-          >
-            <Text style={styles.buttonText}>
-              {loading ? "Registrando..." : "Registrarse"}
-            </Text>
-          </Pressable>
-        </View>
-      </View>
+            <InputField
+              placeholder="Confirmar contraseña"
+              Icon={LockIcon}
+              iconColor="#2E1C42"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+            {errors.confirmPassword && (
+              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+            )}
+            <Pressable
+              style={styles.button}
+              onPress={() => {
+                Keyboard.dismiss();
+                register(email, password, username, confirmPassword, () =>
+                  router.push("/login")
+                );
+              }}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? "Registrando..." : "Registrarse"}
+              </Text>
+            </Pressable>
+          </View>
+       
+      
     </ImageBackground>
+    </Pressable>
   );
 }
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   background: {
     flex: 1,
     justifyContent: "center",
@@ -112,8 +126,8 @@ const styles = StyleSheet.create({
   text: {
     color: colors.light.highlight,
     textAlign: "center",
-    
-    marginVertical: 10
+
+    marginVertical: 10,
   },
   logo: {
     height: 150,

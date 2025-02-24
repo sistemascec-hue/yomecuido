@@ -6,28 +6,24 @@ import fonts from "../theme/fonts";
 export default function TipCard({ title, image, description }) {
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={[styles.subtitle, fonts().subtitle]}>{title}</Text>
       <Image source={image} style={styles.image} resizeMode="contain" />
-      <Text style={styles.description}>{description}</Text>
+      <Text style={[styles.description, fonts().text]}>{description}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#ffffff",
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 15,
     marginBottom: 20,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowColor: "#2E1C42",
+    elevation: 2,
   },
-  title: {
-    fontFamily: "sugo-trial",
+  subtitle: {
+    color:colors.light.text,
     fontSize: 18,
     marginBottom: 10,
     textAlign: "center",
@@ -38,12 +34,13 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 30,  // Ajusta el radio proporcionalmente
     borderWidth: 2,
-    borderColor: "black", // Asegura que el borde sea visible
+    borderColor: colors.light.highlight, // Asegura que el borde sea visible
     overflow: "hidden", // Evita que los bordes se corten
   },
   description: {
-    fontFamily: "sugo-trial",
-    fontSize: 20,
-    textAlign: "center",
+    textAlign: "justify",
+    color: colors.light.text,
+    paddingHorizontal: 5,
+    lineHeight: 20,
   },
 });

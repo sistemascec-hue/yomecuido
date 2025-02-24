@@ -9,7 +9,7 @@ const MyButton = ({ text, href }) => {
   return (
     <Link href={href} asChild>
       <Pressable style={styles.button}>
-        <Text style={[themeFonts.button]}>{text}</Text>
+        <Text style={[themeFonts.button, styles.text]}>{text}</Text>
       </Pressable>
     </Link>
   );
@@ -24,6 +24,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 20,
   },
+  text: {
+    color: colors.light.text
+  }
 
 });
 

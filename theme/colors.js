@@ -3,7 +3,7 @@ const colors = {
     welcomeBackground: "#21ABA5", // Fondo de bienvenida
     appBackground: "#98CECB", // Fondo principal
     buttonBackground: "#2E1C42", // Fondo de los botones
-    text: "#03363D", // Color de las letras principales
+    text: "#FFFFFF", // "#03363D", // Color de las letras principales
     secondaryText: "#1C5861", // Color de letras secundarias
     buttonText: "#FFFFFF", // Color de texto dentro de botones
     navBarBackground: "#FFFFFF", // Fondo de la barra de navegación

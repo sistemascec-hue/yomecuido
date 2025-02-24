@@ -38,7 +38,6 @@ export default function Welcome() {
       <ImageBackground
         source={require("../assets/images/backgrounds/background.webp")}
         style={styles.background}
-        resizeMode="cover"
         onLoad={() => setIsLoaded(true)} // Marca la imagen como cargada
       >
         {isLoaded && (
@@ -138,6 +137,7 @@ image:{
     color: colors.light.highlight,
     fontFamily: "sugo-trial",
     fontSize: 30,
+    textAlign: "center",
   },
   logo: {
     marginTop:70,

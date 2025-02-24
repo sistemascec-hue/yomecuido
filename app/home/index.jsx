@@ -45,11 +45,10 @@ export default function Home() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <ImageBackground
         source={require("../../assets/images/backgrounds/fondojuego.webp")}
         style={styles.background}
-        resizeMode="cover"
       >
         <Navbar />
         <View style={styles.overlay}>
@@ -63,32 +62,31 @@ export default function Home() {
 
           {/* Puntos de juego (estáticos por ahora) */}
           <View style={styles.gamePointsContainer}>
-            <GamePoint number={1} position={{ top: "92%", left: "80%" }}
-            onPress={()=>router.push("/niveles/nivel1")} />
-            <GamePoint number={2} position={{ top: "82%", left: "64%" }} />
+            <GamePoint
+              number={1}
+              position={{ top: "90%", left: "80%" }}
+              onPress={() => router.push("/niveles/nivel1")}
+            />
+            <GamePoint number={2} position={{ top: "80%", left: "64%" }} />
             <GamePoint number={3} position={{ top: "85%", left: "31%" }} />
           </View>
         </View>
       </ImageBackground>
-    </SafeAreaView>
+    </View>
   );
 }
 
 // 🎨 Estilos mejorados
 const styles = StyleSheet.create({
-  safeArea:{
-    flex:1,
-    backgroundColor: "#FFFFF"
+  safeArea: {
+    flex: 1,
+    height: "100vh",
   },
   background: {
     flex: 1,
-    width: "100%",
-    height: "100%",
   },
   overlay: {
     flex: 1,
-    height: "100%",
-    width: "100%",
   },
   welcomeText: {
     color: colors.light.buttonBackground,
@@ -107,7 +105,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    position: 'absolute',
   },
   linkButton: {
     marginTop: 40,
@@ -120,5 +117,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-
 });

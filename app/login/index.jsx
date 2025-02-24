@@ -6,6 +6,7 @@ import {
   Image,
   ImageBackground,
   Pressable,
+  Keyboard
 } from "react-native";
 import { useRouter } from "expo-router";
 import useAuth from "../../hooks/useAuth";
@@ -39,6 +40,7 @@ useEffect(() =>{
       style={styles.background}
       resizeMode="cover"
     >
+      <Pressable onPress={Keyboard.dismiss}>
       <View>
         {successMessage ? (
           <Text style={styles.successText}>{successMessage}</Text>
@@ -75,13 +77,14 @@ useEffect(() =>{
         />
         {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
-        <Pressable style={styles.button} onPress={() => login(email, password, () => router.push("/home"))}>
+        <Pressable style={styles.button} onPress={() => {Keyboard.dismiss();login(email, password, () => router.push("/home"))}}>
           <Text style={styles.buttonText}>{loading ? "Cargando..." : "Iniciar Sesión"}</Text>
         </Pressable>
 
         <Button text="Crear Usuario" href="/register" />
         </View>
       </View>
+      </Pressable>
     </ImageBackground>
   );
 }
