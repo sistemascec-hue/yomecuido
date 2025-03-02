@@ -64,7 +64,7 @@ export default function Home() {
           <View style={styles.gamePointsContainer}>
             <GamePoint
               number={1}
-              position={{ top: "90%", left: "80%" }}
+              position={{ top: "91%", left: "80%" }}
               onPress={() => router.push("/niveles/nivel1")}
             />
             <GamePoint number={2} position={{ top: "80%", left: "64%" }} />

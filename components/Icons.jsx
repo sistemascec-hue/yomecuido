@@ -20,7 +20,7 @@ export const EmailIcon = (props) => (
   <Foundation name="mail" size={24} color="black" {...props} />
 );
 export const LogoutIcon = (props) => (
-  <Ionicons name="log-out" size={40} color="black" {...props} />
+  <Ionicons name="log-out" size={24} color="black" {...props} />
 );
 
 export const HomeIcon = (props) => (
@@ -41,4 +41,8 @@ export const LightlubIcon = (props) => (
 
 export const PeopleIcon = (props) => (
 <Ionicons name="people" size={24} color="black" {...props}/>
+);
+
+export const MoreIcon = (props) => (
+<Ionicons name="arrow-down-circle" size={24} color="black" {...props}/>
 );

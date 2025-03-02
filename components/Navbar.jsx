@@ -11,9 +11,17 @@ import {
 import { useRouter } from "expo-router";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
-import { LogoutIcon, MenuIcon, LinkIcon, LightlubIcon, PeopleIcon, AnchorIcon, HomeIcon } from "./Icons";
+import {
+  LogoutIcon,
+  MenuIcon,
+  LinkIcon,
+  LightlubIcon,
+  PeopleIcon,
+  AnchorIcon,
+  HomeIcon,
+} from "./Icons";
 import colors from "../theme/colors";
-import fonts from "../theme/fonts"
+import fonts from "../theme/fonts";
 const logo = require("../assets/images/small_logos/logo_small1.webp");
 
 export default function Navbar() {
@@ -23,12 +31,13 @@ export default function Navbar() {
 
   // Opciones del menú
   const menuOptions = [
-    { title: "Home", route: "/home", icon: <HomeIcon color= "white"/>  },
-    { title: "Mejoras Prácticas", route: "/mejoras", icon: <LightlubIcon color= "white"/> },
-    { title: "Enlaces Sospechosos", route: "/enlaces", icon: <LinkIcon color= "white"/> },
-    { title: "Consejos", route: "/consejos", icon: <AnchorIcon color= "white"/> },
-    { title: "Sobre Nosotros", route: "/sobre-nosotros", icon: <PeopleIcon color= "white"/> },
+    { title: "Home", route: "/home", icon: <HomeIcon color="white" /> },
+    { title: "Mejoras Prácticas", route: "/mejoras", icon: <LightlubIcon color="white" /> },
+    { title: "Enlaces Sospechosos", route: "/enlaces", icon: <LinkIcon color="white" /> },
+    { title: "Sobre nosotros", route: "/consejos", icon: <PeopleIcon color="white" /> },
+    { title: "Cerrar Sesion", icon: <LogoutIcon color="red" />, isLogout: true }, // 🔴 Agregamos `isLogout`
   ];
+  
 
   // Altura dinámica del menú basada en el número de opciones
   const totalHeight = menuOptions.length * 50; // 50px por opción aprox.
@@ -62,15 +71,15 @@ export default function Navbar() {
   };
 
   return (
-    <View style={{zIndex: 100,}}>
+    <View style={{ zIndex: 100 }}>
       <View style={styles.navbar}>
         {/* Logo */}
         <Image source={logo} style={styles.logo} resizeMode="contain" />
 
-        {/* Botón de cerrar sesión */}
+        {/* Botón de cerrar sesión
         <Pressable onPress={handleLogout} style={{ marginRight: 20 }}>
-          <LogoutIcon style={{ color: "#2E1C42" }} />
-        </Pressable>
+          <LogoutIcon />
+        </Pressable> */}
 
         {/* Menú hamburguesa */}
         <Pressable onPress={toggleMenu}>
@@ -86,15 +95,22 @@ export default function Navbar() {
               key={index}
               style={styles.menuItem}
               onPress={() => {
-                router.push(item.route);
+                if (item.isLogout) {
+                  handleLogout();
+                } else {
+                  router.push(item.route); // 🔵 Redirigir si no es "Cerrar Sesión"
+                }
                 toggleMenu(); // Cerrar el menú después de seleccionar una opción
               }}
             >
               <View style={styles.menuItemContent}>
-              {item.icon}
-              <Text style={[styles.menuText,fonts().button]}>{item.title}</Text>
+                {item.icon}
+                <Text
+                  style={[styles.menuText, item.isLogout && styles.logoutText]}
+                >
+                  {item.title}
+                </Text>
               </View>
-              
             </Pressable>
           ))}
         </Animated.View>
@@ -112,12 +128,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.light.navBarBackground,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
     paddingTop: 10,
   },
   logo: {
     width: 70,
-    marginRight: "60%",
+    marginRight: "75%",
     height: 60,
   },
   menu: {
@@ -126,10 +141,12 @@ const styles = StyleSheet.create({
     right: 0,
     width: "100%",
     backgroundColor: "#4B0076",
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-
   },
+  logoutText: {
+    fontFamily: "sugo-trial",
+    color: "red",
+  },
+  
   menuItem: {
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -137,13 +154,14 @@ const styles = StyleSheet.create({
     borderBottomColor: "#FFFFFF",
   },
   menuText: {
+    fontFamily: "sugo-trial",
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 20,
     marginLeft: 10,
   },
   menuItemContent: {
-    flexDirection: 'row',
+    flexDirection: "row",
     alignItems: "center",
+    marginLeft: 10,
   },
-  
 });
