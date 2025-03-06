@@ -16,9 +16,9 @@ export default function useAuth() {
     let newErrors = {};
 
     if (username !== undefined) {
-      if (!username || username.length < 3) {
+      if (!username || username.length < 5) {
         newErrors.username =
-          "El nombre de usuario debe tener al menos 3 caracteres.";
+          "El nombre de usuario debe tener al menos 5 caracteres.";
       }
     }
 

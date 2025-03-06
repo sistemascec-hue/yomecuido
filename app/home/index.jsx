@@ -78,7 +78,7 @@ export default function HomeScreen() {
   // Crear la animacion de la trancision
   const changeMapWithAnimation = (next) => {
     // Reduce tamaño y desaparece antes del cambio
-    scaleAnim.value = withTiming(0.8, { duration: 600 });
+    scaleAnim.value = withTiming(0.85, { duration: 600 });
     fadeAnim.value = withTiming(0, { duration: 300 });
   
     setTimeout(() => {
@@ -89,7 +89,7 @@ export default function HomeScreen() {
   
       // Vuelve a la opacidad normal y hace zoom in después del cambio
       scaleAnim.value = withTiming(1, { duration: 250 });
-      fadeAnim.value = withTiming(1, { duration: 700 });
+      fadeAnim.value = withTiming(1, { duration: 600 });
     }, 400);
   };
   
@@ -219,7 +219,6 @@ const styles = StyleSheet.create({
   },
   animatedContainer: {
     flex: 1,
-    position: "absolute",
     width: "100%",
     height: "100%",
   },
