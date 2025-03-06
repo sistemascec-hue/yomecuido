@@ -16,7 +16,12 @@ import colors from "../../theme/colors";
 import fonts from "../../theme/fonts";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons"; // Asegúrate de instalar @expo/vector-icons si no lo tienes
-import { Animated } from "react-native";
+// import { Animated } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 
 const { width, height } = Dimensions.get("window");
 
@@ -41,7 +46,8 @@ export default function HomeScreen() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentMap, setCurrentMap] = useState(0);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const fadeAnim = useSharedValue(1);
+  const scaleAnim = useSharedValue(1);
   // Función para obtener datos del usuario desde Firestore
   const fetchUserData = async () => {
     if (!auth.currentUser) {
@@ -71,39 +77,27 @@ export default function HomeScreen() {
 
   // Crear la animacion de la trancision
   const changeMapWithAnimation = (next) => {
-    Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 0, // desvanece la imagen actual (0 = invisible)
-        duration: 500, //300 milisegundos
-        useNativeDriver: true, // mejora el rendimiento
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    // cambia el mapa despues del fade-out
+    // Reduce tamaño y desaparece antes del cambio
+    scaleAnim.value = withTiming(0.8, { duration: 600 });
+    fadeAnim.value = withTiming(0, { duration: 300 });
+  
     setTimeout(() => {
       setCurrentMap((prev) => {
         if (next) return prev < mapBackgrounds.length - 1 ? prev + 1 : prev;
         return prev > 0 ? prev - 1 : prev;
       });
-    }, 300); //Se espera 300 ms para que camnbie de imagen
+  
+      // Vuelve a la opacidad normal y hace zoom in después del cambio
+      scaleAnim.value = withTiming(1, { duration: 250 });
+      fadeAnim.value = withTiming(1, { duration: 700 });
+    }, 400);
   };
-
-  // Navegación entre mapas
-  const goToNextMap = () => {
-    setCurrentMap((prev) =>
-      prev < mapBackgrounds.length - 1 ? prev + 1 : prev
-    );
-  };
-
-  const goToPreviousMap = () => {
-    setCurrentMap((prev) => (prev > 0 ? prev - 1 : prev));
-  };
-
+  
+  const animatedMapStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleAnim.value }],
+    opacity: fadeAnim.value,
+  }));
+  
   // Renderizar los puntos de juego según el mapa actual
   const renderGamePoints = () => {
     switch (currentMap) {
@@ -164,16 +158,16 @@ export default function HomeScreen() {
       {/* Contenido principal */}
       <View style={styles.content}>
         {/* Fondo del mapa actual */}
-        <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
+        <Animated.View style={[styles.animatedContainer, animatedMapStyle]}>
           <ImageBackground
             source={mapBackgrounds[currentMap]}
             style={styles.mapBackground}
             resizeMode="cover"
           >
-            {/* Contenedor de los puntos de juego */}
             <View style={styles.gamePointsContainer}>{renderGamePoints()}</View>
           </ImageBackground>
         </Animated.View>
+
         {/* Navegación entre mapas */}
         <View style={styles.mapNavigation}>
           <Pressable
@@ -222,6 +216,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  animatedContainer: {
+    flex: 1,
+    position: "absolute",
+    width: "100%",
+    height: "100%",
   },
   content: {
     flex: 1,
