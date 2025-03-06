@@ -3,6 +3,7 @@ const fonts = (theme) => ({
   text: {
     fontFamily: "sugo-extra-light",
     fontSize: 18,
+    letterSpacing: 1.5,
   },
   title: {
     fontFamily: "sugo-trial",

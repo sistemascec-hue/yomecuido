@@ -5,16 +5,18 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Pressable,
 } from "react-native";
 import Navbar from "../../components/Navbar";
 import { auth, db } from "../../firebase";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import GamePoint from "../../components/GamePoint";
 import colors from "../../theme/colors";
 import fonts from "../../theme/fonts";
 import { useRouter } from "expo-router";
-import { Ionicons } from '@expo/vector-icons'; // Asegúrate de instalar @expo/vector-icons si no lo tienes
+import { Ionicons } from "@expo/vector-icons"; // Asegúrate de instalar @expo/vector-icons si no lo tienes
+import { Animated } from "react-native";
 
 const { width, height } = Dimensions.get("window");
 
@@ -26,12 +28,20 @@ const mapBackgrounds = [
   require("../../assets/images/backgrounds/fondojuego4.webp"),
 ];
 
+// Nombres creativos de los mapas
+const mapNames = [
+  "🔐 Hackea tu Seguridad: La Aventura de las Contraseñas",
+  "🚨 Redes Peligrosas: ¿Amigo o Enemigo?",
+  "🌍 Explorador Digital: Travesía por Internet Seguro",
+  "🎮 Zona Gamer: Protege tu Identidad en el Juego",
+];
+
 export default function HomeScreen() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentMap, setCurrentMap] = useState(0);
-
+  const fadeAnim = useRef(new Animated.Value(1)).current;
   // Función para obtener datos del usuario desde Firestore
   const fetchUserData = async () => {
     if (!auth.currentUser) {
@@ -39,7 +49,7 @@ export default function HomeScreen() {
       setUsername("Usuario");
       return;
     }
-    
+
     try {
       const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
       if (userDoc.exists()) {
@@ -59,9 +69,35 @@ export default function HomeScreen() {
     fetchUserData();
   }, []);
 
+  // Crear la animacion de la trancision
+  const changeMapWithAnimation = (next) => {
+    Animated.sequence([
+      Animated.timing(fadeAnim, {
+        toValue: 0, // desvanece la imagen actual (0 = invisible)
+        duration: 500, //300 milisegundos
+        useNativeDriver: true, // mejora el rendimiento
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // cambia el mapa despues del fade-out
+    setTimeout(() => {
+      setCurrentMap((prev) => {
+        if (next) return prev < mapBackgrounds.length - 1 ? prev + 1 : prev;
+        return prev > 0 ? prev - 1 : prev;
+      });
+    }, 300); //Se espera 300 ms para que camnbie de imagen
+  };
+
   // Navegación entre mapas
   const goToNextMap = () => {
-    setCurrentMap((prev) => (prev < mapBackgrounds.length - 1 ? prev + 1 : prev));
+    setCurrentMap((prev) =>
+      prev < mapBackgrounds.length - 1 ? prev + 1 : prev
+    );
   };
 
   const goToPreviousMap = () => {
@@ -70,11 +106,15 @@ export default function HomeScreen() {
 
   // Renderizar los puntos de juego según el mapa actual
   const renderGamePoints = () => {
-    switch(currentMap) {
+    switch (currentMap) {
       case 0:
         return (
           <>
-            <GamePoint number={1} position={{ top: "91%", left: "80%" }} onPress={() => router.push("/niveles/nivel1")} />
+            <GamePoint
+              number={1}
+              position={{ top: "91%", left: "80%" }}
+              onPress={() => router.push("/niveles/nivel1")}
+            />
             <GamePoint number={2} position={{ top: "80%", left: "64%" }} />
             <GamePoint number={3} position={{ top: "85%", left: "31%" }} />
           </>
@@ -114,51 +154,66 @@ export default function HomeScreen() {
       <View>
         {/* Mensaje de bienvenida */}
         {loading ? (
-            <Text style={styles.loadingText}>Cargando...</Text>
-          ) : (
-            <Text style={[styles.welcomeText, fonts().title]}>
-              Hola {username}, bienvenido a YoMeCuido
-            </Text>
-          )}
+          <Text style={styles.loadingText}>Cargando...</Text>
+        ) : (
+          <Text style={[styles.welcomeText, fonts().title]}>
+            Hola {username}, bienvenido a YoMeCuido
+          </Text>
+        )}
       </View>
       {/* Contenido principal */}
       <View style={styles.content}>
         {/* Fondo del mapa actual */}
-        <ImageBackground
-          source={mapBackgrounds[currentMap]}
-          style={styles.mapBackground}
-          resizeMode="cover"
-        >
-          
-          
-          {/* Contenedor de los puntos de juego */}
-          <View style={styles.gamePointsContainer}>
-            {renderGamePoints()}
-          </View>
+        <Animated.View style={{ opacity: fadeAnim, flex: 1 }}>
+          <ImageBackground
+            source={mapBackgrounds[currentMap]}
+            style={styles.mapBackground}
+            resizeMode="cover"
+          >
+            {/* Contenedor de los puntos de juego */}
+            <View style={styles.gamePointsContainer}>{renderGamePoints()}</View>
           </ImageBackground>
-          {/* Navegación entre mapas */}
-          <View style={styles.mapNavigation}>
-            <TouchableOpacity 
-              style={[styles.navButton, currentMap === 0 && styles.navButtonDisabled]} 
-              onPress={goToPreviousMap}
-              disabled={currentMap === 0}
-            >
-              <Ionicons name="chevron-back" size={24} color={currentMap === 0 ? "#999" : "#fff"} />
-            </TouchableOpacity>
-            
-            <Text style={styles.mapIndicator}>
-              Mapa {currentMap + 1}/{mapBackgrounds.length}
-            </Text>
-            
-            <TouchableOpacity 
-              style={[styles.navButton, currentMap === mapBackgrounds.length - 1 && styles.navButtonDisabled]} 
-              onPress={goToNextMap}
-              disabled={currentMap === mapBackgrounds.length - 1}
-            >
-              <Ionicons name="chevron-forward" size={24} color={currentMap === mapBackgrounds.length - 1 ? "#999" : "#fff"} />
-            </TouchableOpacity>
-          </View>
-        
+        </Animated.View>
+        {/* Navegación entre mapas */}
+        <View style={styles.mapNavigation}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.navButton,
+              currentMap === 0 && styles.navButtonDisabled,
+              pressed && styles.navButtonPressed, // Efecto al presionar
+            ]}
+            onPress={() => changeMapWithAnimation(false)}
+            disabled={currentMap === 0}
+          >
+            <Ionicons
+              name="chevron-back"
+              size={24}
+              color={currentMap === 0 ? "#999" : "#fff"}
+            />
+          </Pressable>
+
+          {/* Mostrar nombre del mapa */}
+          <Text style={[styles.mapName, fonts().subtitle2]}>
+            {mapNames[currentMap]}
+          </Text>
+
+          <Pressable
+            style={({ pressed }) => [
+              styles.navButton,
+              currentMap === mapBackgrounds.length - 1 &&
+                styles.navButtonDisabled,
+              pressed && styles.navButtonPressed, // Efecto al presionar
+            ]}
+            onPress={() => changeMapWithAnimation(true)}
+            disabled={currentMap === mapBackgrounds.length - 1}
+          >
+            <Ionicons
+              name="chevron-forward"
+              size={24}
+              color={currentMap === mapBackgrounds.length - 1 ? "#999" : "#fff"}
+            />
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -175,7 +230,6 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    //marginTop: -80, // solo por motivos de posicion de la pantalla
   },
   welcomeText: {
     color: colors.light.buttonBackground,
@@ -206,19 +260,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: colors.light.highlight,
   },
   navButton: {
     padding: 10,
-    backgroundColor: "rgba(0,0,0,0.3)",
+    backgroundColor: colors.light.buttonBackground,
     borderRadius: 20,
   },
   navButtonDisabled: {
     opacity: 0.5,
   },
-  mapIndicator: {
-    color: "#fff",
+
+  navButtonPressed: {
+    backgroundColor: "rgba(255,255,255,0.4)",
+  },
+  mapName: {
+    color: colors.light.buttonBackground,
     fontSize: 16,
-    fontWeight: "bold",
+    textAlign: "center",
+    flex: 1,
+    marginHorizontal: 10,
   },
 });

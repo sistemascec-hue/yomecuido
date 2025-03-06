@@ -12,7 +12,6 @@ import { useRouter } from "expo-router";
 import useAuth from "../../hooks/useAuth";
 import colors from "../../theme/colors";
 import fonts from "../../theme/fonts";
-import globalStyles from "../../constants/globalStyles";
 import InputField from "../../components/InputField";
 import { UserIcon, LockIcon, EmailIcon } from "../../components/Icons";
 
