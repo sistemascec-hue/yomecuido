@@ -52,7 +52,7 @@ export default function RegisterScreen() {
             {errors.username && (
               <Text style={styles.errorText}>{errors.username}</Text>
             )}
-
+            
             <InputField
               placeholder="Correo electrónico"
               Icon={EmailIcon}

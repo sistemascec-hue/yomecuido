@@ -34,7 +34,7 @@ export default function Navbar() {
     { title: "Home", route: "/home", icon: <HomeIcon color="white" /> },
     { title: "Mejoras Prácticas", route: "/mejoras", icon: <LightlubIcon color="white" /> },
     { title: "Enlaces Sospechosos", route: "/enlaces", icon: <LinkIcon color="white" /> },
-    { title: "Sobre nosotros", route: "/consejos", icon: <PeopleIcon color="white" /> },
+    { title: "Sobre nosotros", route: "/sobre-nosotros", icon: <PeopleIcon color="white" /> },
     { title: "Cerrar Sesion", icon: <LogoutIcon color="red" />, isLogout: true }, // 🔴 Agregamos `isLogout`
   ];
   

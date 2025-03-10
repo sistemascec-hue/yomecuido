@@ -57,7 +57,7 @@ useEffect(() =>{
         <Text style={[fonts().title, styles.text]}>Inicio de Sesión</Text>
 
         {authError ? <Text style={styles.errorText}>{authError}</Text> : null}
-
+        
         <InputField
           placeholder="Correo electrónico"
           Icon={EmailIcon}
@@ -66,6 +66,7 @@ useEffect(() =>{
           onChangeText={setEmail}
         />
         {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+        
 
         <InputField
           placeholder="Contraseña"
@@ -76,6 +77,7 @@ useEffect(() =>{
           onChangeText={setPassword}
         />
         {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+        
 
         <Pressable style={styles.button} onPress={() => {Keyboard.dismiss();login(email, password, () => router.push("/home"))}}>
           <Text style={styles.buttonText}>{loading ? "Cargando..." : "Iniciar Sesión"}</Text>

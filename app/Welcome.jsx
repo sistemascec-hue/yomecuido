@@ -13,6 +13,8 @@ import { useRouter } from "expo-router";
 import colors from "../theme/colors";
 import fonts from "../theme/fonts";
 import globalStyle from "../constants/globalStyles";
+import { auth } from "../firebase"; // Importa auth
+import { onAuthStateChanged } from "firebase/auth"; // Importa el listener
 
 export default function Welcome() {
   const [theme, setTheme] = useState("light");
@@ -20,15 +22,24 @@ export default function Welcome() {
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false); // Estado para controlar la carga
   const [showContent, setShowContent] = useState(false);
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowContent(true);
-    }, 1500);
-    return () => clearTimeout(timer);
+    // 🔹 Verifica si el usuario ya está autenticado
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace("/home"); // 🔹 Si está autenticado, lo redirige a "home"
+      } else {
+        setTimeout(() => {
+          setShowContent(true);
+        }, 1500); // ⏳ Espera antes de mostrar la pantalla de bienvenida
+      }
+    });
+
+    return () => unsubscribe(); // 🔹 Limpia el listener al desmontar
   }, []);
 
   return (
-    <SafeAreaView style={{flex:1}}>
+    <SafeAreaView style={{ flex:1 }}>
       {!isLoaded && (
         <View style={styles.loaderContainer}>
           <ActivityIndicator size="large" color={colors.light.highlight} />
@@ -40,14 +51,13 @@ export default function Welcome() {
         style={styles.background}
         onLoad={() => setIsLoaded(true)} // Marca la imagen como cargada
       >
-        {isLoaded && (
+        {isLoaded && showContent && ( // 🔹 Solo muestra si el usuario NO está autenticado
           <View style={globalStyle.container}>
             <View style={styles.image}>
-            <Image
-              source={require("../assets/images/logos/logo4.webp")}
-              style={styles.logo}
-            />
-
+              <Image
+                source={require("../assets/images/logos/logo4.webp")}
+                style={styles.logo}
+              />
             </View>
             
             <Text style={[styles.subText]}>
@@ -73,6 +83,7 @@ export default function Welcome() {
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   background: {
     flex: 1,
@@ -82,7 +93,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loaderContainer: {
-    position: "absolute", // Asegura que cubra todo encima de otros elementos
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
@@ -92,13 +103,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     height: "100%",
-    backgroundColor: "#fff", // Puedes cambiarlo según el diseño
-    zIndex: 10, // Asegura que esté por encima de todo
+    backgroundColor: "#fff",
+    zIndex: 10, // Se asegura de estar sobre otros elementos
   },
-image:{
-  justifyContent: "center",
-  alignItems: "center",
-},
+  image: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
   subText: {
     fontFamily: "sugo-trial",
     lineHeight: 30,
@@ -106,20 +117,19 @@ image:{
     marginBottom: 40,
     marginTop: 20,
     fontSize: 24,
-    color: "white"
+    color: "white",
   },
   buttonWrapper: {
     padding: 4,
     borderWidth: 2,
     borderRadius: 12,
     borderColor: "white",
-    marginHorizontal: 80
+    marginHorizontal: 80,
   },
   button: {
     backgroundColor: "white",
     paddingVertical: 12,
     paddingHorizontal: 10,
-    
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
@@ -140,7 +150,7 @@ image:{
     textAlign: "center",
   },
   logo: {
-    marginTop:70,
+    marginTop: 70,
     height: 300,
     width: 400,
   },
