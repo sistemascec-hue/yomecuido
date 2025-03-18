@@ -4,17 +4,20 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
-  fetchSignInMethodsForEmail
+  signOut,
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { Alert } from "react-native";
+import UseCountdown from "../components/UseCountdown";
 
 export default function useAuth() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [authError, setAuthError] = useState("");
+  const { secondsLeft, isDisabled, startTimer } = UseCountdown(60);
 
+  let lastResendTime = 0;
   // Función para validar campos
   const validateLoginInputs = ({ email, password }) => {
     let newErrors = {};
@@ -92,15 +95,16 @@ export default function useAuth() {
       );
       const user = userCredential.user;
 
-      // Bloquear acceso si el correo no está verificado
+      // Si el usuario no verificó su correo, cerrar sesión y bloquear acceso
       if (!user.emailVerified) {
-        await auth.signOut(); // Cerrar sesión para evitar que acceda sin verificar
+        await signOut(auth);
         setAuthError("Debes verificar tu correo antes de iniciar sesión.");
+        startTimer(); // ⏳ Iniciar temporizador automáticamente
         setLoading(false);
         return;
       }
 
-      onSuccess(); // ✅ Si está verificado, permitir acceso
+      onSuccess(); // Si está verificado, permitir acceso
     } catch (error) {
       console.log("Código de error:", error.code);
       console.log("Mensaje de error:", error.message);
@@ -175,26 +179,44 @@ export default function useAuth() {
     }
     setLoading(false);
   };
+
   const resendVerificationEmail = async (email, password) => {
+    if (isDisabled) return; // Evitar múltiples clics mientras el temporizador está activo
+
     try {
-      // Forzar inicio de sesión para que Firebase reconozca al usuario
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const user = userCredential.user;
-  
+
       if (!user.emailVerified) {
         await sendEmailVerification(user);
         Alert.alert("Correo reenviado", "Revisa tu bandeja de entrada.");
+        startTimer(); // Reiniciar temporizador después de reenviar el correo
+
+        // Cerrar sesion asegurando que la accion se complete
+        setTimeout(async () => {
+          await auth.signOut();
+          console.log("Sesión cerrada después del reenvío de correo.");
+        }, 1000);
       } else {
         Alert.alert("Tu cuenta ya está verificada.");
       }
     } catch (error) {
       console.error("Error al reenviar verificación:", error.message);
-      Alert.alert("Error", "No se pudo reenviar el correo.");
+      if (error.code === "auth/too-many-requests") {
+        Alert.alert(
+          "Demasiados intentos",
+          "Has enviado demasiadas solicitudes en poco tiempo. Intenta nuevamente en unos minutos."
+        );
+        startTimer();
+      } else {
+        Alert.alert("Error", "No se pudo reenviar el correo.");
+      }
     }
   };
-  
-  
-  
 
   return {
     login,
@@ -203,5 +225,7 @@ export default function useAuth() {
     authError,
     loading,
     resendVerificationEmail,
+    secondsLeft,
+    isDisabled,
   };
 }

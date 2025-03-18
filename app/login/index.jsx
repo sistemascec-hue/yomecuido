@@ -6,26 +6,40 @@ import {
   Image,
   ImageBackground,
   Pressable,
-  Keyboard
+  Keyboard,
+  Alert
 } from "react-native";
 import { useRouter } from "expo-router";
-import useAuth, { resendVerificationEmail } from "../../hooks/useAuth";
+import useAuth from "../../hooks/useAuth";
 import colors from "../../theme/colors";
 import fonts from "../../theme/fonts";
 import globalStyles from "../../constants/globalStyles";
 import InputField from "../../components/InputField";
 import { EmailIcon, LockIcon } from "../../components/Icons";
 import Button from "../../components/Button";
+import { auth } from "../../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  sendEmailVerification,
-} from "firebase/auth";
+import { sendEmailVerification, signInWithEmailAndPassword, signOut } from "firebase/auth";
+// import ResendEmailButton from "../../components/ResendEmailButton"
+
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
-  const { login, errors, authError, loading, resendVerificationEmail } = useAuth();
+  const {
+    login,
+    errors,
+    authError,
+    loading,
+    resendVerificationEmail,
+    secondsLeft,
+    isDisabled
+  } = useAuth();
+
+
+
+
   useEffect(() => {
     const checkSuccessMessage = async () => {
       const message = await AsyncStorage.getItem("registrationSuccess");
@@ -36,7 +50,7 @@ export default function LoginScreen() {
     };
     checkSuccessMessage();
   }, []);
-
+  
   return (
     <ImageBackground
       source={require("../../assets/images/backgrounds/background2.webp")}
@@ -79,17 +93,21 @@ export default function LoginScreen() {
               value={password}
               onChangeText={setPassword}
             />
-            {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-            {authError === "Debes verificar tu correo antes de iniciar sesión." && (
+             {/* Mostrar el temporizador antes de que el usuario haga clic en "Reenviar" */}
+          {authError === "Debes verificar tu correo antes de iniciar sesión." && (
+            <>
+              <Text style={styles.timerText}>
+                {isDisabled ? `Volver a reenviar en ${secondsLeft}s` : "Reenviar correo de verificación"}
+              </Text>
               <Pressable
-              style={styles.resendButton}
-              onPress={() => resendVerificationEmail(email, password)}
-            >
-              <Text style={styles.resendText}>Reenviar correo de verificación</Text>
-            </Pressable>
-            
-            )}
-
+                style={[styles.resendButton, isDisabled && styles.disabledButton]}
+                onPress={() => resendVerificationEmail(email, password)}
+                disabled={isDisabled}
+              >
+                <Text style={styles.resendText}>Reenviar correo</Text>
+              </Pressable>
+            </>
+          )}
 
 
             <Pressable style={styles.button} onPress={() => { Keyboard.dismiss(); login(email, password, () => router.push("/home")) }}>
@@ -108,6 +126,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  timerText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: "#007AFF",
+    fontWeight: "bold",
   },
   container: {
     flex: 1,
@@ -178,11 +202,11 @@ const styles = StyleSheet.create({
 
   },
   resendButton: {
-    marginTop: 10,
-    backgroundColor: "#ffffff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
+    marginTop: 5,
+    backgroundColor: colors.light.buttonBackground,
+    paddingVertical: 15,
+    paddingHorizontal: 26,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: "#007AFF",
     alignItems: "center",
@@ -193,9 +217,12 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
   },
-
+  disabledButton: {
+    backgroundColor: "#ccc",
+    borderColor: "#999",
+  },
   resendText: {
-    color: "#007AFF",
+    color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },
