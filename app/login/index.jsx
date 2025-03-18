@@ -93,6 +93,7 @@ export default function LoginScreen() {
               value={password}
               onChangeText={setPassword}
             />
+            {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
              {/* Mostrar el temporizador antes de que el usuario haga clic en "Reenviar" */}
           {authError === "Debes verificar tu correo antes de iniciar sesión." && (
             <>
