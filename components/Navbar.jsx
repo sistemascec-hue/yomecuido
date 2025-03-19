@@ -17,11 +17,9 @@ import {
   LinkIcon,
   LightlubIcon,
   PeopleIcon,
-  AnchorIcon,
   HomeIcon,
 } from "./Icons";
 import colors from "../theme/colors";
-import fonts from "../theme/fonts";
 const logo = require("../assets/images/small_logos/logo_small1.webp");
 
 export default function Navbar() {
@@ -35,7 +33,7 @@ export default function Navbar() {
     { title: "Mejoras Prácticas", route: "/mejoras", icon: <LightlubIcon color="white" /> },
     { title: "Enlaces Sospechosos", route: "/enlaces", icon: <LinkIcon color="white" /> },
     { title: "Sobre nosotros", route: "/sobre-nosotros", icon: <PeopleIcon color="white" /> },
-    { title: "Cerrar Sesion", icon: <LogoutIcon color="red" />, isLogout: true }, // 🔴 Agregamos `isLogout`
+    { title: "Cerrar Sesion", icon: <LogoutIcon color="red" />, isLogout: true }, // Agregamos `isLogout`
   ];
   
 
@@ -76,11 +74,6 @@ export default function Navbar() {
         {/* Logo */}
         <Image source={logo} style={styles.logo} resizeMode="contain" />
 
-        {/* Botón de cerrar sesión
-        <Pressable onPress={handleLogout} style={{ marginRight: 20 }}>
-          <LogoutIcon />
-        </Pressable> */}
-
         {/* Menú hamburguesa */}
         <Pressable onPress={toggleMenu}>
           <MenuIcon style={{ color: "#2E1C42" }} />
@@ -98,7 +91,7 @@ export default function Navbar() {
                 if (item.isLogout) {
                   handleLogout();
                 } else {
-                  router.push(item.route); // 🔵 Redirigir si no es "Cerrar Sesión"
+                  router.push(item.route);
                 }
                 toggleMenu(); // Cerrar el menú después de seleccionar una opción
               }}

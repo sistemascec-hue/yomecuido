@@ -50,7 +50,7 @@ export default function LoginScreen() {
     };
     checkSuccessMessage();
   }, []);
-  
+
   return (
     <ImageBackground
       source={require("../../assets/images/backgrounds/background2.webp")}
@@ -58,15 +58,14 @@ export default function LoginScreen() {
       resizeMode="cover"
     >
       <Pressable onPress={Keyboard.dismiss}>
-        <View>
+        <View style={styles.messageContainer}>
           {successMessage ? (
             <Text style={styles.successText}>{successMessage}</Text>
           ) : null}
         </View>
+
         <View style={globalStyles.container}>
           <View style={styles.InputField}>
-
-
             <Image
               source={require("../../assets/images/logos/logo1.webp")}
               style={styles.logo}
@@ -94,26 +93,39 @@ export default function LoginScreen() {
               onChangeText={setPassword}
             />
             {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-             {/* Mostrar el temporizador antes de que el usuario haga clic en "Reenviar" */}
-          {authError === "Debes verificar tu correo antes de iniciar sesión." && (
-            <>
-              <Text style={styles.timerText}>
-                {isDisabled ? `Volver a reenviar en ${secondsLeft}s` : "Reenviar correo de verificación"}
-              </Text>
+            {/* Mostrar el temporizador antes de que el usuario haga clic en "Reenviar" */}
+            {authError !== "Debes verificar tu correo antes de iniciar sesión." && (
               <Pressable
-                style={[styles.resendButton, isDisabled && styles.disabledButton]}
-                onPress={() => resendVerificationEmail(email, password)}
+                style={styles.button}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  login(email, password, () => router.push("/home"));
+                }}
                 disabled={isDisabled}
               >
-                <Text style={styles.resendText}>Reenviar correo</Text>
+                <Text style={[styles.buttonText, isDisabled && styles.disabledButton]}>
+                  {loading ? "Cargando..." : "Iniciar Sesión"}
+                </Text>
               </Pressable>
-            </>
-          )}
+            )}
 
-
-            <Pressable style={styles.button} onPress={() => { Keyboard.dismiss(); login(email, password, () => router.push("/home")) }}>
-              <Text style={styles.buttonText}>{loading ? "Cargando..." : "Iniciar Sesión"}</Text>
-            </Pressable>
+            {authError === "Debes verificar tu correo antes de iniciar sesión." && (
+              <View>
+                <Text style={styles.timerText}>
+                  {isDisabled ? `Volver a reenviar en ${secondsLeft}s` : "Reenviar correo de verificación"}
+                </Text>
+                <Pressable
+                  style={[styles.resendButton, isDisabled && styles.disabledButton]}
+                  onPress={async () => {
+                    await resendVerificationEmail(email, password); // Primero reenvía el correo
+                    router.replace("/login"); // Luego redirige a Login
+                  }}
+                  disabled={isDisabled}
+                >
+                  <Text style={styles.resendText}>Reenviar correo</Text>
+                </Pressable>
+              </View>
+            )}
 
             <Button text="Crear Usuario" href="/register" />
           </View>
@@ -203,20 +215,18 @@ const styles = StyleSheet.create({
 
   },
   resendButton: {
-    marginTop: 5,
     backgroundColor: colors.light.buttonBackground,
-    paddingVertical: 15,
-    paddingHorizontal: 26,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#007AFF",
+    paddingVertical: 13,
+    paddingHorizontal: 40,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 2, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
   disabledButton: {
     backgroundColor: "#ccc",
@@ -224,9 +234,18 @@ const styles = StyleSheet.create({
   },
   resendText: {
     color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "sugo-trial",
+    fontSize: 20,
   },
-
+  messageContainer: {
+    width: "90%", // Ajuste dinámico para evitar desbordes
+    alignSelf: "center", // Centra en la pantalla
+    justifyContent: "center", // Asegura que esté alineado verticalmente
+    alignItems: "center", // Centra horizontalmente
+    padding: 10, // Espacio interno para mejor legibilidad
+    backgroundColor: "rgba(0,0,0,0.7)", // Fondo semitransparente para resaltar el mensaje
+    borderRadius: 10, // Bordes redondeados para estética
+    marginVertical: 10, // Espaciado arriba y abajo
+  }
 });
 

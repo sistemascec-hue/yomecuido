@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Pressable,
+  Alert
 } from "react-native";
 import Navbar from "../../components/Navbar";
 import { auth, db } from "../../firebase";
@@ -53,19 +54,40 @@ export default function HomeScreen() {
     if (!auth.currentUser) {
       setLoading(false);
       setUsername("Usuario");
+      // Mostrar alerta si no hay usuario autenticado
+      Alert.alert(
+        "Error de sesión",
+        "Hubo un error. Vuelve a iniciar sesión.",
+        [{ text: "OK", onPress: () => router.replace("/login") }] // Redirigir a login
+      );
       return;
     }
 
     try {
-      const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+      // console.log("🔍 Buscando datos en Firestore para UID:", auth.currentUser.uid);
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userDoc = await getDoc(userRef);
       if (userDoc.exists()) {
-        setUsername(userDoc.data().username);
+        const userData = userDoc.data();
+        // console.log("📌 Datos obtenidos de Firestore:", userData);
+        setUsername(userData.username || "Usuario");
       } else {
+        // console.warn(" No se encontró el usuario en Firestore.");
         setUsername("Usuario");
+        Alert.alert(
+          "Error de sesión",
+          "Hubo un error. Vuelve a iniciar sesión.",
+          [{ text: "OK", onPress: () => router.replace("/login") }]
+        );
       }
     } catch (error) {
-      console.error("Error al obtener datos del usuario:", error);
+      // console.error("Error al obtener datos del usuario:", error);
       setUsername("Usuario");
+      Alert.alert(
+        "Error de sesión",
+        "Hubo un error. Vuelve a iniciar sesión.",
+        [{ text: "OK", onPress: () => router.replace("/login") }] // Redirigir a login
+      );
     } finally {
       setLoading(false);
     }
@@ -80,24 +102,24 @@ export default function HomeScreen() {
     // Reduce tamaño y desaparece antes del cambio
     scaleAnim.value = withTiming(0.85, { duration: 600 });
     fadeAnim.value = withTiming(0, { duration: 300 });
-  
+
     setTimeout(() => {
       setCurrentMap((prev) => {
         if (next) return prev < mapBackgrounds.length - 1 ? prev + 1 : prev;
         return prev > 0 ? prev - 1 : prev;
       });
-  
+
       // Vuelve a la opacidad normal y hace zoom in después del cambio
       scaleAnim.value = withTiming(1, { duration: 250 });
       fadeAnim.value = withTiming(1, { duration: 600 });
     }, 400);
   };
-  
+
   const animatedMapStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scaleAnim.value }],
     opacity: fadeAnim.value,
   }));
-  
+
   // Renderizar los puntos de juego según el mapa actual
   const renderGamePoints = () => {
     switch (currentMap) {
@@ -195,7 +217,7 @@ export default function HomeScreen() {
             style={({ pressed }) => [
               styles.navButton,
               currentMap === mapBackgrounds.length - 1 &&
-                styles.navButtonDisabled,
+              styles.navButtonDisabled,
               pressed && styles.navButtonPressed, // Efecto al presionar
             ]}
             onPress={() => changeMapWithAnimation(true)}

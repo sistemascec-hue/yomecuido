@@ -92,7 +92,7 @@ export default function RegisterScreen() {
               onPress={() => {
                 Keyboard.dismiss();
                 register(email, password, username, confirmPassword, () =>
-                  router.push("/login")
+                  router.replace("/login")
                 );
               }}
             >
