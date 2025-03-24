@@ -12,6 +12,7 @@ const fonts = (theme) => ({
   subtitle: {
     fontFamily: "sugo-trial",
     fontSize: 24,
+    letterSpacing: 1.5,
     
   },
   subtitle2: {

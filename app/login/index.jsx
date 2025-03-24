@@ -10,7 +10,7 @@ import {
   Alert
 } from "react-native";
 import { useRouter } from "expo-router";
-import useAuth from "../../hooks/useAuth";
+import useAuth, { resetPassword } from "../../hooks/useAuth";
 import colors from "../../theme/colors";
 import fonts from "../../theme/fonts";
 import globalStyles from "../../constants/globalStyles";
@@ -93,6 +93,9 @@ export default function LoginScreen() {
               onChangeText={setPassword}
             />
             {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            <Text style={[fonts().subtitle,styles.forgotPasswordText]} onPress={() => router.push("/resetpassword")}>
+              ¿Olvidaste tu contraseña?
+            </Text>
             {/* Mostrar el temporizador antes de que el usuario haga clic en "Reenviar" */}
             {authError !== "Debes verificar tu correo antes de iniciar sesión." && (
               <Pressable
@@ -203,10 +206,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     width: '80%',
   },
-  InputField: {
-    justifyContent: "center",
-    alignItems: "center"
-  },
   successText: {
     fontFamily: "sugo-trial",
     fontSize: 20,
@@ -246,6 +245,13 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.7)", // Fondo semitransparente para resaltar el mensaje
     borderRadius: 10, // Bordes redondeados para estética
     marginVertical: 10, // Espaciado arriba y abajo
-  }
+  },
+  forgotPasswordText: {
+    color: "#007AFF",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 10,
+    textDecorationLine: "underline",
+}
 });
 

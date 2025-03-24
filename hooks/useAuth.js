@@ -5,9 +5,10 @@ import {
   signInWithEmailAndPassword,
   sendEmailVerification,
   signOut,
+  sendPasswordResetEmail
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { doc, setDoc, serverTimestamp,getDoc } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp, getDoc } from "firebase/firestore";
 import { Alert } from "react-native";
 import UseCountdown from "../components/UseCountdown";
 
@@ -88,45 +89,79 @@ export default function useAuth() {
 
     setLoading(true);
     try {
-        // console.log(" Intentando iniciar sesión con:", email);
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
+      // console.log(" Intentando iniciar sesión con:", email);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
 
-        // console.log("Usuario autenticado:", user);
+      // console.log("Usuario autenticado:", user);
 
-        // Validar directamente con Firebase Authentication
-        // console.log("Estado de verificación del email:", user.emailVerified);
+      // Validar directamente con Firebase Authentication
+      // console.log("Estado de verificación del email:", user.emailVerified);
 
-        if (!user.emailVerified) {
-            await signOut(auth); // 🚪 Cerrar sesión automáticamente
-            setAuthError("Debes verificar tu correo antes de iniciar sesión.");
-            startTimer(); // Iniciar temporizador automáticamente
-            setLoading(false);
-            return;
-        }
+      if (!user.emailVerified) {
+        await signOut(auth); // 🚪 Cerrar sesión automáticamente
+        setAuthError("Debes verificar tu correo antes de iniciar sesión.");
+        startTimer(); // Iniciar temporizador automáticamente
+        setLoading(false);
+        return;
+      }
 
-        // console.log("Usuario con email verificado, iniciando sesión...");
-        onSuccess(); // Permitir acceso si el correo está verificado
+      // console.log("Usuario con email verificado, iniciando sesión...");
+      onSuccess(); // Permitir acceso si el correo está verificado
     } catch (error) {
-        console.log("Código de error:", error.code);
-        console.log("Mensaje de error:", error.message);
+      console.log("Código de error:", error.code);
+      console.log("Mensaje de error:", error.message);
 
-        switch (error.code) {
-            case "auth/user-not-found":
-            case "auth/wrong-password":
-            case "auth/invalid-credential":
-                setAuthError("Correo o contraseña incorrectos.");
-                break;
-            case "auth/user-disabled":
-                setAuthError("Este usuario ha sido deshabilitado.");
-                break;
-            default:
-                setAuthError("Ocurrió un error inesperado. Intente nuevamente.");
-        }
+      switch (error.code) {
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+        case "auth/invalid-credential":
+          setAuthError("Correo o contraseña incorrectos.");
+          break;
+        case "auth/user-disabled":
+          setAuthError("Este usuario ha sido deshabilitado.");
+          break;
+        default:
+          setAuthError("Ocurrió un error inesperado. Intente nuevamente.");
+      }
     }
     setLoading(false);
-};
+  };
 
+  // Funcion para "olvidasste tu contraseña"
+  const resetPassword = async (email) => {
+    if (!email) {
+      setAuthError("Por favor, ingresa tu correo electrónico.");
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert(
+        "Correo enviado",
+        "Se ha enviado un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada o spam.",
+        [{ text: "OK" }]
+      );
+    } catch (error) {
+      console.error("Error al enviar restablecimiento de contraseña:", error);
+      switch (error.code) {
+        case "auth/user-not-found":
+          setAuthError("No hay cuenta asociada a este correo.");
+          break;
+        case "auth/invalid-email":
+          setAuthError("Correo electrónico inválido.");
+          break;
+        default:
+          setAuthError(
+            "No se pudo enviar el correo. Inténtalo más tarde."
+          );
+      }
+    }
+  };
 
   // creando con firestore y firebase authentication
   const register = async (
@@ -159,7 +194,6 @@ export default function useAuth() {
       await setDoc(doc(db, "users", user.uid), {
         username,
         email,
-        emailVerified: user.emailVerified,
         createdAt: serverTimestamp(),
       });
       //await signOut(auth); // posiblemente lo borre
@@ -186,6 +220,7 @@ export default function useAuth() {
     setLoading(false);
   };
 
+  //Funcion para reenviar el correo electronico
   const resendVerificationEmail = async (email, password) => {
     if (isDisabled) return; // Evitar múltiples clics mientras el temporizador está activo
 
@@ -199,7 +234,10 @@ export default function useAuth() {
 
       if (!user.emailVerified) {
         await sendEmailVerification(user);
-        Alert.alert("Correo reenviado", "Verifica tu correo y vuelve a iniciar sesion ");
+        Alert.alert(
+          "Correo reenviado",
+          "Verifica tu correo y vuelve a iniciar sesion "
+        );
         startTimer(); // Reiniciar temporizador después de reenviar el correo
 
         // Cerrar sesión después de reenviar el correo y redirigir manualmente al login
@@ -233,5 +271,6 @@ export default function useAuth() {
     resendVerificationEmail,
     secondsLeft,
     isDisabled,
+    resetPassword,
   };
 }
