@@ -99,17 +99,22 @@ export default function LoginScreen() {
             {/* Mostrar el temporizador antes de que el usuario haga clic en "Reenviar" */}
             {authError !== "Debes verificar tu correo antes de iniciar sesión." && (
               <Pressable
-                style={styles.button}
-                onPress={() => {
-                  Keyboard.dismiss();
-                  login(email, password, () => router.push("/home"));
-                }}
-                disabled={isDisabled}
-              >
-                <Text style={[styles.buttonText, isDisabled && styles.disabledButton]}>
-                  {loading ? "Cargando..." : "Iniciar Sesión"}
-                </Text>
-              </Pressable>
+              style={({ pressed }) => [
+                styles.button,
+                pressed && styles.buttonPressed,
+                isDisabled && styles.disabledButton,
+              ]}
+              onPress={() => {
+                Keyboard.dismiss();
+                login(email, password, () => router.push("/home"));
+              }}
+              disabled={isDisabled}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? "Cargando..." : "Iniciar Sesión"}
+              </Text>
+            </Pressable>
+            
             )}
 
             {authError === "Debes verificar tu correo antes de iniciar sesión." && (
@@ -149,6 +154,15 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     fontWeight: "bold",
   },
+  buttonPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.97 }],
+  },
+  
+  disabledButton: {
+    opacity: 0.4,
+  },
+  
   container: {
     flex: 1,
     justifyContent: "center",

@@ -24,10 +24,10 @@ export default function Welcome() {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // 🔹 Verifica si el usuario ya está autenticado
+    // Verificar si el usuario ya está autenticado
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        router.replace("/home"); // 🔹 Si está autenticado, lo redirige a "home"
+        router.replace("/home"); // Si está autenticado, lo redirige a "home"
       } else {
         setTimeout(() => {
           setShowContent(true);
@@ -35,7 +35,7 @@ export default function Welcome() {
       }
     });
 
-    return () => unsubscribe(); // 🔹 Limpia el listener al desmontar
+    return () => unsubscribe(); // Limpiar el listener al desmontar
   }, []);
 
   return (

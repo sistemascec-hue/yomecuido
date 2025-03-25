@@ -1,28 +1,45 @@
-import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   Pressable,
+  StyleSheet,
   Alert,
   ImageBackground,
+  Keyboard,
+  Platform,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
 } from "react-native";
-import { resetPassword } from "../../hooks/useAuth";
+import { useState } from "react";
+import { Link } from "expo-router";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../../firebase";
 import { useRouter } from "expo-router";
+import colors from "../../theme/colors";
+import fonts from "../../theme/fonts";
 
 export default function ResetPasswordScreen() {
   const [email, setEmail] = useState("");
   const router = useRouter();
 
-  const handleReset = async () => {
+  const handlePasswordReset = async () => {
     if (!email) {
       Alert.alert("Error", "Por favor, ingresa tu correo electrónico.");
       return;
     }
 
-    await resetPassword(email);
-    router.push("/resetpassword/success"); // Redirigir a la pantalla de confirmación
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert(
+        "Correo enviado",
+        "Revisa tu bandeja de entrada para restablecer tu contraseña."
+      );
+      router.replace("/login");
+    } catch (error) {
+      console.error("Error al enviar el correo:", error.message);
+      Alert.alert("Error", "No se pudo enviar el correo. Verifica que sea válido.");
+    }
   };
 
   return (
@@ -31,30 +48,46 @@ export default function ResetPasswordScreen() {
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.container}>
-        <Text style={styles.title}>Restablecer Contraseña</Text>
-        <Text style={styles.info}>
-          Ingresa tu correo electrónico y te enviaremos un enlace para
-          restablecer tu contraseña.
-        </Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <View style={styles.innerContainer}>
+            <Text style={[fonts().title, styles.title]}>Restablecer Contraseña</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Correo electrónico"
-          placeholderTextColor="#999"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
+            <TextInput
+              style={styles.input}
+              placeholder="Ingresa tu correo"
+              placeholderTextColor="#999"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+            />
 
-        <Pressable style={styles.button} onPress={handleReset}>
-          <Text style={styles.buttonText}>Enviar enlace</Text>
-        </Pressable>
+            <Pressable onPress={handlePasswordReset}
+            style={({ pressed }) => [
+              styles.button,
+              pressed && styles.backButtonPressed,
+            ]}
+            >
+              <Text style={styles.buttonText}>Enviar Correo</Text>
+            </Pressable>
+            <View>
+              <Pressable
+                onPress={() => router.replace("/login")}
+                style={({ pressed }) => [
+                  styles.backButton,
+                  pressed && styles.backButtonPressed,
+                ]}
+              >
+                <Text style={styles.backButtonText}>Volver al inicio de sesión</Text>
+              </Pressable>
+            </View>
 
-        <Pressable onPress={() => router.replace("/login")}>
-          <Text style={styles.backToLogin}>Volver al inicio de sesión</Text>
-        </Pressable>
-      </View>
+          </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </ImageBackground>
   );
 }
@@ -66,50 +99,73 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   container: {
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
-    padding: 20,
-    borderRadius: 10,
-    width: "85%",
+    flex: 1,
+    justifyContent: "center",
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  backButton: {
+    marginTop: 20,
+    backgroundColor: "transparent",
     alignItems: "center",
+    justifyContent: "center",
+
+  },
+
+  backButtonPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.97 }],
+  },
+
+  backButtonText: {
+    color: colors.light.highlight,
+    fontSize: 18,
+    fontFamily: "sugo-trial",
+    textAlign: "center",
+  },
+  innerContainer: {
+    backgroundColor: "rgba(116, 116, 116, 0.92)",
+    borderRadius: 16,
+    padding: 30,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 2, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
   },
   title: {
-    color: "#fff",
+    color: colors.light.buttonBackground,
     fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  info: {
-    color: "#ccc",
-    fontSize: 16,
     textAlign: "center",
     marginBottom: 20,
   },
   input: {
-    backgroundColor: "#fff",
     width: "100%",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    marginBottom: 20,
+    backgroundColor: "#fff",
     fontSize: 16,
   },
   button: {
-    backgroundColor: "#007AFF",
+    backgroundColor: colors.light.buttonBackground,
     paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
+    paddingHorizontal: 25,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 5,
+    marginVertical: 10,
   },
   buttonText: {
-    color: "#fff",
+    color: "white",
+    fontFamily: "sugo-trial",
     fontSize: 18,
-    fontWeight: "bold",
-  },
-  backToLogin: {
-    color: "#fff",
-    fontSize: 16,
-    marginTop: 15,
-    textDecorationLine: "underline",
   },
 });

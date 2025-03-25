@@ -1,17 +1,24 @@
 import { Pressable, Text, StyleSheet } from "react-native";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import colors from "../theme/colors";
 import fonts from "../theme/fonts";
 import { useState } from "react";
+
 const MyButton = ({ text, href }) => {
   const [theme, setTheme] = useState("light");
   const themeFonts = fonts(theme);
+  const router = useRouter();
+
   return (
-    <Link href={href} asChild>
-      <Pressable style={styles.button}>
-        <Text style={[themeFonts.button, styles.text]}>{text}</Text>
-      </Pressable>
-    </Link>
+    <Pressable
+      onPress={() => router.push(href)}
+      style={({ pressed }) => [
+        styles.button,
+        pressed && styles.buttonPressed,
+      ]}
+    >
+      <Text style={[themeFonts.button, styles.text]}>{text}</Text>
+    </Pressable>
   );
 };
 
@@ -23,11 +30,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: "center",
     marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  buttonPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.97 }],
   },
   text: {
-    color: colors.light.text
-  }
-
+    color: colors.light.text,
+    fontFamily: "sugo-trial",
+  },
 });
 
 export default MyButton;
