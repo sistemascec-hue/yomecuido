@@ -1,10 +1,10 @@
 import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-export default function GamePoint({ number, size = 60, position }) {
+export default function GamePoint({ number, icon, size = 90, position }) {
   const router = useRouter();
-  
+
 
   // redirigir a ña pantalla segun el numero del gamepoint
   const handlePress = () => {
@@ -12,34 +12,38 @@ export default function GamePoint({ number, size = 60, position }) {
   };
   return (
     <Pressable
-      style={({pressed})=>[
+      style={({ pressed }) => [
         styles.container,
         {
           width: size,
           height: size,
           top: position?.top || "50%",
           left: position?.left || "50%",
-          transform: [{scale: pressed ? 0.9:1}],
+          transform: [{ scale: pressed ? 0.9 : 1 }],
         },
       ]}
       onPress={handlePress}
     >
-      {/* Capa de sombra inferior para más profundidad */}
-      <View style={styles.shadowLayer} />
+      {/* Imagen flotante por encima del botón */}
+      {icon && <Image source={icon} style={styles.icon} resizeMode="contain" />}
 
-      {/* Botón con degradado para profundidad */}
+      {/* Capa inferior para sombra */}
+      <View style={styles.shadowLayer} />
+      <View style={styles.glowLayer} />
+      {/* Botón principal con efecto 3D */}
       <LinearGradient
-        colors={["#8B5E3C", "#5A4030"]} // Efecto de profundidad con sombras y luces
+        colors={["#ebe8e6", "#f2eeeb"]}
         style={styles.button}
       >
-        {/* Brillo superior para efecto de luz */}
+        {/* Luz superior */}
         <LinearGradient
-          colors={["rgba(255,255,255,0.6)", "transparent"]}
+          colors={["rgba(245, 158, 118, 0.6)", "transparent"]}
           style={styles.lightEffect}
         />
         <Text style={styles.text}>{number}</Text>
       </LinearGradient>
     </Pressable>
+
   );
 }
 
@@ -48,18 +52,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "center",
     justifyContent: "center",
-    perspective: 500, // 📌 Añadir profundidad a la transformación 3D
+    perspective: 100, // 📌 Añadir profundidad a la transformación 3D
   },
   shadowLayer: {
     position: "absolute",
     width: "100%",
     height: "100%",
-    backgroundColor: "#3D2B1F",
-    borderTopEndRadius: 30,
-    borderTopStartRadius: 30,
-    borderBottomEndRadius: 20,
-    borderBottomStartRadius: 20,
-    top: 5,
+    backgroundColor: "#ff8c00",
+    borderTopEndRadius: 40,
+    borderTopStartRadius: 40,
+    borderBottomEndRadius: 40,
+    borderBottomStartRadius: 40,
+    top: 7,
     left: 0,
     shadowColor: "#000",
     shadowOffset: { width: 12, height: 12 }, // 📌 Ajustar sombra para efecto inclinado
@@ -67,23 +71,24 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 20,
     transform: [
-      { rotateX: "40deg" }, // 📌 Inclinación en X
+      { rotateX: "55deg" }, // 📌 Inclinación en X
       { rotateY: "0deg" }, // 📌 Inclinación en Y
     ],
   },
   button: {
     width: "100%",
     height: "100%",
-    borderRadius: 30, // Hacerlo completamente redondo
+    borderRadius: 50, // Hacerlo completamente redondo
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 3,
-    borderColor: "#3D2B1F", // Borde oscuro para dar profundidad
-    shadowColor: "#000",
+    borderColor: "#cc6502", // Borde oscuro para dar profundidad
+    shadowColor: "#050505",
     transform: [
       { rotateX: "55deg" }, // 📌 Inclinación en X
       { rotateY: "0deg" }, // 📌 Inclinación en Y
     ],
+
   },
   lightEffect: {
     position: "absolute",
@@ -92,14 +97,34 @@ const styles = StyleSheet.create({
     height: "100%",
     borderTopLeftRadius: 100,
     borderTopRightRadius: 100,
-    borderBottomLeftRadius:20,
+    borderBottomLeftRadius: 20,
     opacity: 0.9,
 
+  },
+  glowLayer: {
+    position: "absolute",
+    width: "80%",
+    height: "90%",
+    top: "-20%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    opacity: 0.6,
+    shadowColor: "#fff",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 40,
+    zIndex: -1,
   },
   text: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#FFFFFF",
+    color: "black",
 
+  },
+  icon: {
+    position: "absolute",
+    top: -25, // 👈 ajusta según el tamaño de tu botón
+    width: "60%",
+    height: "60%",
   },
 });

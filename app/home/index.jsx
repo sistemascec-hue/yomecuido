@@ -127,8 +127,9 @@ export default function HomeScreen() {
         return (
           <>
             <GamePoint
-              number={1}
-              position={{ top: "91%", left: "80%" }}
+            number={1}
+              icon={require("../../assets/images/map_icons/book1.png")}
+              position={{ top: "50%", left: "75%" }}
               onPress={() => router.push("/niveles/nivel1")}
             />
             <GamePoint number={2} position={{ top: "80%", left: "64%" }} />
