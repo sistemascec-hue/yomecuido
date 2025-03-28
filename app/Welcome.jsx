@@ -13,8 +13,7 @@ import { useRouter } from "expo-router";
 import colors from "../theme/colors";
 import fonts from "../theme/fonts";
 import globalStyle from "../constants/globalStyles";
-import { auth } from "../firebase"; // Importa auth
-import { onAuthStateChanged } from "firebase/auth"; // Importa el listener
+import { useAuthContext } from "../contexts/AuthContext";
 
 export default function Welcome() {
   const [theme, setTheme] = useState("light");
@@ -22,25 +21,22 @@ export default function Welcome() {
   const router = useRouter();
   const [isLoaded, setIsLoaded] = useState(false); // Estado para controlar la carga
   const [showContent, setShowContent] = useState(false);
-
+  const { user, authLoading } = useAuthContext();
   useEffect(() => {
-    // Verificar si el usuario ya está autenticado
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (!authLoading) {
       if (user) {
-        router.replace("/home"); // Si está autenticado, lo redirige a "home"
+        router.replace("/home");
       } else {
+        // Mostrar bienvenida después de 1.5 segundos si no hay sesión
         setTimeout(() => {
           setShowContent(true);
-        }, 1500); // ⏳ Espera antes de mostrar la pantalla de bienvenida
+        }, 1500);
       }
-    });
-
-    return () => unsubscribe(); // Limpiar el listener al desmontar
-  }, []);
-
+    }
+  }, [user, authLoading]);
   return (
-    <SafeAreaView style={{ flex:1 }}>
-      {!isLoaded && (
+    <SafeAreaView style={{ flex: 1 }}>
+      {authLoading && (
         <View style={styles.loaderContainer}>
           <ActivityIndicator size="large" color={colors.light.highlight} />
         </View>
@@ -59,7 +55,7 @@ export default function Welcome() {
                 style={styles.logo}
               />
             </View>
-            
+
             <Text style={[styles.subText]}>
               ¿Cuidas tu información adecuadamente?{"\n"}
               YOMECUIDO te enseñará cómo hacerlo
