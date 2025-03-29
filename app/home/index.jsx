@@ -8,8 +8,9 @@ import {
   Pressable,
   Alert
 } from "react-native";
+import { useAuthContext } from "../../contexts/AuthContext";
 import Navbar from "../../components/Navbar";
-import { auth, db } from "../../firebase";
+import { db } from "../../firebase";
 import { useEffect, useState, useRef } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import GamePoint from "../../components/GamePoint";
@@ -28,7 +29,7 @@ const { width, height } = Dimensions.get("window");
 
 // Mapas disponibles
 const mapBackgrounds = [
-  require("../../assets/images/backgrounds/fondojuego1.webp"),
+  require("../../assets/images/backgrounds/background3.webp"),
   require("../../assets/images/backgrounds/fondojuego2.webp"),
   require("../../assets/images/backgrounds/fondojuego3.webp"),
   require("../../assets/images/backgrounds/fondojuego4.webp"),
@@ -43,36 +44,32 @@ const mapNames = [
 ];
 
 export default function HomeScreen() {
+  const { user, authLoading } = useAuthContext();
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentMap, setCurrentMap] = useState(0);
   const fadeAnim = useSharedValue(1);
   const scaleAnim = useSharedValue(1);
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace("/login");
+    }
+  }, [authLoading, user]);
+
+  useEffect(() => {
+    if (user) fetchUserData();
+  }, [user]);
+
   // Función para obtener datos del usuario desde Firestore
   const fetchUserData = async () => {
-    if (!auth.currentUser) {
-      setLoading(false);
-      setUsername("Usuario");
-      // Mostrar alerta si no hay usuario autenticado
-      Alert.alert(
-        "Error de sesión",
-        "Hubo un error. Vuelve a iniciar sesión.",
-        [{ text: "OK", onPress: () => router.replace("/login") }] // Redirigir a login
-      );
-      return;
-    }
-
     try {
-      // console.log("🔍 Buscando datos en Firestore para UID:", auth.currentUser.uid);
-      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        // console.log("📌 Datos obtenidos de Firestore:", userData);
         setUsername(userData.username || "Usuario");
       } else {
-        // console.warn(" No se encontró el usuario en Firestore.");
         setUsername("Usuario");
         Alert.alert(
           "Error de sesión",
@@ -81,21 +78,16 @@ export default function HomeScreen() {
         );
       }
     } catch (error) {
-      // console.error("Error al obtener datos del usuario:", error);
       setUsername("Usuario");
       Alert.alert(
         "Error de sesión",
         "Hubo un error. Vuelve a iniciar sesión.",
-        [{ text: "OK", onPress: () => router.replace("/login") }] // Redirigir a login
+        [{ text: "OK", onPress: () => router.replace("/login") }]
       );
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchUserData();
-  }, []);
 
   // Crear la animacion de la trancision
   const changeMapWithAnimation = (next) => {
@@ -119,7 +111,14 @@ export default function HomeScreen() {
     transform: [{ scale: scaleAnim.value }],
     opacity: fadeAnim.value,
   }));
-
+  if (authLoading || !user) {
+    return (
+      <View style={styles.container}>
+        <Navbar />
+        <Text style={styles.loadingText}>Verificando sesión...</Text>
+      </View>
+    );
+  }
   // Renderizar los puntos de juego según el mapa actual
   const renderGamePoints = () => {
     switch (currentMap) {
@@ -127,7 +126,7 @@ export default function HomeScreen() {
         return (
           <>
             <GamePoint
-            number={1}
+              number={1}
               icon={require("../../assets/images/map_icons/book1.png")}
               position={{ top: "50%", left: "75%" }}
               onPress={() => router.push("/niveles/nivel1")}
@@ -170,13 +169,11 @@ export default function HomeScreen() {
       <Navbar />
       <View>
         {/* Mensaje de bienvenida */}
-        {loading ? (
-          <Text style={styles.loadingText}>Cargando...</Text>
-        ) : (
+        {username ? (
           <Text style={[styles.welcomeText, fonts().title]}>
             Hola {username}, bienvenido a YoMeCuido
           </Text>
-        )}
+        ) : null}
       </View>
       {/* Contenido principal */}
       <View style={styles.content}>

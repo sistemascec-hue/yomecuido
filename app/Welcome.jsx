@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     backgroundColor: "#fff",
-    zIndex: 10, // Se asegura de estar sobre otros elementos
+    zIndex: 10,
   },
   image: {
     justifyContent: "center",

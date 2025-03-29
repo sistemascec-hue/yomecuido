@@ -9,8 +9,6 @@ import {
   Text,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
 import {
   LogoutIcon,
   MenuIcon,
@@ -19,6 +17,7 @@ import {
   PeopleIcon,
   HomeIcon,
 } from "./Icons";
+import { useAuthContext } from "../contexts/AuthContext";
 import colors from "../theme/colors";
 const logo = require("../assets/images/small_logos/logo_small1.webp");
 
@@ -26,7 +25,7 @@ export default function Navbar() {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuHeight = useRef(new Animated.Value(0)).current;
-
+  const { logout } = useAuthContext(); 
   // Opciones del menú
   const menuOptions = [
     { title: "Home", route: "/home", icon: <HomeIcon color="white" /> },
@@ -59,7 +58,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      await logout(); // Usamos la función del contexto
       Alert.alert("Sesión cerrada", "Has cerrado sesión correctamente.");
       router.replace("/login");
     } catch (error) {
@@ -67,7 +66,6 @@ export default function Navbar() {
       Alert.alert("Error", "No se pudo cerrar sesión. Intenta de nuevo.");
     }
   };
-
   return (
     <View style={{ zIndex: 100 }}>
       <View style={styles.navbar}>

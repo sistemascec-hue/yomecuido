@@ -40,7 +40,7 @@ export default function GamePoint({ number, icon, size = 90, position }) {
           colors={["rgba(245, 158, 118, 0.6)", "transparent"]}
           style={styles.lightEffect}
         />
-        <Text style={styles.text}>{number}</Text>
+        {!icon && <Text style={styles.text}>{number}</Text>}
       </LinearGradient>
     </Pressable>
 
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 20,
     transform: [
-      { rotateX: "55deg" }, // 📌 Inclinación en X
+      { rotateX: "65deg" }, // 📌 Inclinación en X
       { rotateY: "0deg" }, // 📌 Inclinación en Y
     ],
   },
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     borderColor: "#cc6502", // Borde oscuro para dar profundidad
     shadowColor: "#050505",
     transform: [
-      { rotateX: "55deg" }, // 📌 Inclinación en X
+      { rotateX: "65deg" }, // 📌 Inclinación en X
       { rotateY: "0deg" }, // 📌 Inclinación en Y
     ],
 
@@ -103,11 +103,11 @@ const styles = StyleSheet.create({
   },
   glowLayer: {
     position: "absolute",
-    width: "80%",
+    width: "90%",
     height: "90%",
     top: "-20%",
     backgroundColor: "white",
-    borderRadius: 20,
+    borderRadius: 15,
     opacity: 0.6,
     shadowColor: "#fff",
     shadowOffset: { width: 0, height: 0 },
@@ -123,8 +123,9 @@ const styles = StyleSheet.create({
   },
   icon: {
     position: "absolute",
-    top: -25, // 👈 ajusta según el tamaño de tu botón
-    width: "60%",
-    height: "60%",
+    top: -15, // 👈 ajusta según el tamaño de tu botón
+    width: "70%",
+    height: "70%",
+    zIndex:10
   },
 });
