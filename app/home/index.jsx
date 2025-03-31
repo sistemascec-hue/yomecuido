@@ -52,6 +52,7 @@ export default function HomeScreen() {
   const [currentMap, setCurrentMap] = useState(0);
   const fadeAnim = useSharedValue(1);
   const scaleAnim = useSharedValue(1);
+  const getMapaKey = (index) => `mapa${index + 1}`;
   useEffect(() => {
     if (!authLoading && !user) {
       router.replace("/login");
@@ -70,7 +71,7 @@ export default function HomeScreen() {
       if (userDoc.exists()) {
         const userData = userDoc.data();
         setUsername(userData.username || "Usuario");
-        setUserProgress(userData.progress?.mapa1 || {});
+        setUserProgress(userData.progress || {});
       } else {
         setUsername("Usuario");
         Alert.alert(
@@ -121,52 +122,91 @@ export default function HomeScreen() {
       </View>
     );
   }
+  const mapaKey = getMapaKey(currentMap);
+  const mapaProgress = userProgress[mapaKey] || {}; // evita errores si aún no existe
   // Renderizar los puntos de juego según el mapa actual
   const renderGamePoints = () => {
     switch (currentMap) {
       case 0:
         return (
           <>
+
             <GamePoint
               number={1}
-              icon={require("../../assets/images/map_icons/book1.png")}
               position={{ top: "50%", left: "75%" }}
-              estado={userProgress.nivel1}
+              icon={require("../../assets/images/map_icons/book1.png")}
+              estado={mapaProgress.nivel1}
             />
             <GamePoint
               number={2}
               position={{ top: "80%", left: "64%" }}
-              estado={userProgress.nivel2}
+              estado={mapaProgress.nivel2}
             />
             <GamePoint
               number={3}
               position={{ top: "85%", left: "31%" }}
-              estado={userProgress.nivel3}
+              estado={mapaProgress.nivel3}
             />
           </>
         );
       case 1:
         return (
           <>
-            <GamePoint number={4} position={{ top: "80%", left: "70%" }} />
-            <GamePoint number={5} position={{ top: "75%", left: "50%" }} />
-            <GamePoint number={6} position={{ top: "85%", left: "30%" }} />
+             <GamePoint
+              number={4}
+              position={{ top: "85%", left: "31%" }}
+              estado={mapaProgress.nivel3}
+            />
+             <GamePoint
+              number={5}
+              position={{ top: "60%", left: "31%" }}
+              estado={mapaProgress.nivel3}
+            />
+             <GamePoint
+              number={6}
+              position={{ top: "40%", left: "31%" }}
+              estado={mapaProgress.nivel3}
+            />
           </>
         );
       case 2:
         return (
           <>
-            <GamePoint number={7} position={{ top: "80%", left: "60%" }} />
-            <GamePoint number={8} position={{ top: "85%", left: "40%" }} />
-            <GamePoint number={9} position={{ top: "90%", left: "20%" }} />
+             <GamePoint
+              number={7}
+              position={{ top: "85%", left: "31%" }}
+              estado={mapaProgress.nivel3}
+            />
+             <GamePoint
+              number={8}
+              position={{ top: "60%", left: "31%" }}
+              estado={mapaProgress.nivel3}
+            />
+             <GamePoint
+              number={9}
+              position={{ top: "40%", left: "31%" }}
+              estado={mapaProgress.nivel3}
+            />
           </>
         );
       case 3:
         return (
           <>
-            <GamePoint number={10} position={{ top: "78%", left: "50%" }} />
-            <GamePoint number={11} position={{ top: "82%", left: "30%" }} />
-            <GamePoint number={12} position={{ top: "90%", left: "10%" }} />
+             <GamePoint
+              number={10}
+              position={{ top: "85%", left: "31%" }}
+              estado={mapaProgress.nivel3}
+            />
+             <GamePoint
+              number={11}
+              position={{ top: "60%", left: "31%" }}
+              estado={mapaProgress.nivel3}
+            />
+             <GamePoint
+              number={12}
+              position={{ top: "40%", left: "31%" }}
+              estado={mapaProgress.nivel3}
+            />
           </>
         );
       default:
