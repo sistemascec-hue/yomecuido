@@ -191,9 +191,25 @@ export default function useAuth() {
         [{ text: "Entendido" }]
       );
       // Guardar usuario en Firestore
+      const progress = {
+        mapa1: {
+          nivel1: "desbloqueado",  // El primer nivel habilitado
+          nivel2: "bloqueado",
+          nivel3: "bloqueado",
+          nivel4: "bloqueado"
+        },
+        mapa2: {
+          nivel1: "bloqueado",
+          nivel2: "bloqueado",
+          nivel3: "bloqueado",
+          nivel4: "bloqueado"
+        },
+      };
+      
       await setDoc(doc(db, "users", user.uid), {
         username,
         email,
+        progress,
         createdAt: serverTimestamp(),
       });
       //await signOut(auth); // posiblemente lo borre

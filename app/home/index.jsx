@@ -44,6 +44,7 @@ const mapNames = [
 ];
 
 export default function HomeScreen() {
+  const [userProgress, setUserProgress] = useState({});
   const { user, authLoading } = useAuthContext();
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -69,6 +70,7 @@ export default function HomeScreen() {
       if (userDoc.exists()) {
         const userData = userDoc.data();
         setUsername(userData.username || "Usuario");
+        setUserProgress(userData.progress?.mapa1 || {});
       } else {
         setUsername("Usuario");
         Alert.alert(
@@ -129,10 +131,18 @@ export default function HomeScreen() {
               number={1}
               icon={require("../../assets/images/map_icons/book1.png")}
               position={{ top: "50%", left: "75%" }}
-              onPress={() => router.push("/niveles/nivel1")}
+              estado={userProgress.nivel1}
             />
-            <GamePoint number={2} position={{ top: "80%", left: "64%" }} />
-            <GamePoint number={3} position={{ top: "85%", left: "31%" }} />
+            <GamePoint
+              number={2}
+              position={{ top: "80%", left: "64%" }}
+              estado={userProgress.nivel2}
+            />
+            <GamePoint
+              number={3}
+              position={{ top: "85%", left: "31%" }}
+              estado={userProgress.nivel3}
+            />
           </>
         );
       case 1:

@@ -2,14 +2,21 @@ import React from "react";
 import { View, Text, Pressable, StyleSheet, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-export default function GamePoint({ number, icon, size = 90, position }) {
+export default function GamePoint({ number, icon, size = 90, position, estado = "bloqueado" }) {
   const router = useRouter();
 
 
   // redirigir a ña pantalla segun el numero del gamepoint
   const handlePress = () => {
-    router.push(`/niveles/nivel${number}`);
+    if (estado !== "bloqueado") {
+      router.push(`/niveles/nivel${number}`);
+    } else {
+      Alert.alert("Nivel bloqueado", "Completa el anterior para desbloquear este nivel.");
+    }
   };
+
+  const isBloqueado = estado === "bloqueado";
+  const isCompletado = estado === "completado";
   return (
     <Pressable
       style={({ pressed }) => [
@@ -20,22 +27,27 @@ export default function GamePoint({ number, icon, size = 90, position }) {
           top: position?.top || "50%",
           left: position?.left || "50%",
           transform: [{ scale: pressed ? 0.9 : 1 }],
+          opacity: isBloqueado ? 0.4 : 1,
         },
       ]}
       onPress={handlePress}
+      disabled={isBloqueado}
     >
       {/* Imagen flotante por encima del botón */}
       {icon && <Image source={icon} style={styles.icon} resizeMode="contain" />}
 
-      {/* Capa inferior para sombra */}
-      <View style={styles.shadowLayer} />
+      {/* Sombra inferior */}
+      <View style={[styles.shadowLayer, isCompletado && { backgroundColor: "#00c853" }]} />
+      {/* Efecto glow */}
       <View style={styles.glowLayer} />
       {/* Botón principal con efecto 3D */}
       <LinearGradient
-        colors={["#ebe8e6", "#f2eeeb"]}
-        style={styles.button}
+        colors={isCompletado ? ["#c8e6c9", "#a5d6a7"] : ["#ebe8e6", "#f2eeeb"]}
+        style={[
+          styles.button,
+          isCompletado && { borderColor: "#00c853" }
+        ]}
       >
-        {/* Luz superior */}
         <LinearGradient
           colors={["rgba(245, 158, 118, 0.6)", "transparent"]}
           style={styles.lightEffect}
@@ -105,7 +117,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: "90%",
     height: "90%",
-    top: "-20%",
+    top: "-25%",
     backgroundColor: "white",
     borderRadius: 15,
     opacity: 0.6,
