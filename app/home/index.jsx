@@ -133,18 +133,26 @@ export default function HomeScreen() {
 
             <GamePoint
               number={1}
-              position={{ top: "50%", left: "75%" }}
+              position={{ top: "80%", left: "70%" }}
               icon={require("../../assets/images/map_icons/book1.png")}
               estado={mapaProgress.nivel1}
             />
             <GamePoint
               number={2}
-              position={{ top: "80%", left: "64%" }}
+              position={{ top: "60%", left: "17%" }}
+              icon={require("../../assets/images/map_icons/game1.png")}
               estado={mapaProgress.nivel2}
             />
             <GamePoint
               number={3}
-              position={{ top: "85%", left: "31%" }}
+              position={{ top: "40%", left: "70%" }}
+              icon={require("../../assets/images/map_icons/film1.png")}
+              estado={mapaProgress.nivel3}
+            />
+            <GamePoint
+              number={3}
+              position={{ top: "70%", left: "31%" }}
+              icon={require("../../assets/images/map_icons/star1.png")}
               estado={mapaProgress.nivel3}
             />
           </>

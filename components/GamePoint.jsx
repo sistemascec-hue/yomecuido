@@ -37,19 +37,21 @@ export default function GamePoint({ number, icon, size = 90, position, estado = 
       {icon && <Image source={icon} style={styles.icon} resizeMode="contain" />}
 
       {/* Sombra inferior */}
-      <View style={[styles.shadowLayer, isCompletado && { backgroundColor: "#00c853" }]} />
+      <View style={[styles.shadowLayer, isCompletado && { backgroundColor: "#f7931e" }]} />
       {/* Efecto glow */}
-      <View style={styles.glowLayer} />
+      <View style={[styles.glowLayer, isCompletado && { backgroundColor: "#0ad13f" }]} />
       {/* Botón principal con efecto 3D */}
+      {/* "#ebe8e6", "#f2eeeb" */}
       <LinearGradient
-        colors={isCompletado ? ["#c8e6c9", "#a5d6a7"] : ["#ebe8e6", "#f2eeeb"]}
+        colors={isCompletado ? ["#37ff00","#5ff566"] : ["#ebe8e6", "#f2eeeb"]}
         style={[
           styles.button,
-          isCompletado && { borderColor: "#00c853" }
+          isCompletado && { borderColor: "#fc9905" }
         ]}
-      >
+        >
+       {/* rgba(245, 158, 118, 0.6) */}
         <LinearGradient
-          colors={["rgba(245, 158, 118, 0.6)", "transparent"]}
+          colors={["rgba(248, 105, 9, 0.6)", "transparent"]}
           style={styles.lightEffect}
         />
         {!icon && <Text style={styles.text}>{number}</Text>}
@@ -64,28 +66,24 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignItems: "center",
     justifyContent: "center",
-    perspective: 100, // 📌 Añadir profundidad a la transformación 3D
+    perspective: 100, // Añadir profundidad a la transformación 3D
   },
   shadowLayer: {
     position: "absolute",
     width: "100%",
     height: "100%",
-    backgroundColor: "#ff8c00",
+    backgroundColor: "#f7931e",
     borderTopEndRadius: 40,
     borderTopStartRadius: 40,
     borderBottomEndRadius: 40,
     borderBottomStartRadius: 40,
-    top: 7,
+    top: 5,
     left: 0,
-    shadowColor: "#000",
-    shadowOffset: { width: 12, height: 12 }, // 📌 Ajustar sombra para efecto inclinado
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 20,
     transform: [
-      { rotateX: "65deg" }, // 📌 Inclinación en X
-      { rotateY: "0deg" }, // 📌 Inclinación en Y
+      { rotateX: "60deg" }, // Inclinación en X
+      { rotateY: "0deg" }, // Inclinación en Y
     ],
+    zIndex:10,
   },
   button: {
     width: "100%",
@@ -93,39 +91,42 @@ const styles = StyleSheet.create({
     borderRadius: 50, // Hacerlo completamente redondo
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 3,
-    borderColor: "#cc6502", // Borde oscuro para dar profundidad
-    shadowColor: "#050505",
+    borderWidth: 8,
+    borderColor: "#fc9905", // Borde oscuro para dar profundidad
+    shadowColor: "#171615",
     transform: [
-      { rotateX: "65deg" }, // 📌 Inclinación en X
-      { rotateY: "0deg" }, // 📌 Inclinación en Y
+      { rotateX: "65deg" }, // Inclinación en X
+      { rotateY: "0deg" }, // Inclinación en Y
     ],
-
+    zIndex: 25,
   },
   lightEffect: {
     position: "absolute",
     top: 0,
     width: "100%",
     height: "100%",
-    borderTopLeftRadius: 100,
-    borderTopRightRadius: 100,
-    borderBottomLeftRadius: 20,
-    opacity: 0.9,
+    // borderTopLeftRadius: 100,
+    // borderTopRightRadius: 10,
+    // borderBottomLeftRadius: 10,
+    borderRadius: 100,
+    opacity: 1,
+    zIndex: 1,
 
   },
   glowLayer: {
     position: "absolute",
     width: "90%",
-    height: "90%",
+    height: "70%",
     top: "-25%",
     backgroundColor: "white",
-    borderRadius: 15,
+    borderTopEndRadius: 10,
+    borderTopStartRadius: 10,
     opacity: 0.6,
     shadowColor: "#fff",
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 40,
-    zIndex: -1,
+    zIndex: -10,
   },
   text: {
     fontSize: 28,
@@ -135,9 +136,14 @@ const styles = StyleSheet.create({
   },
   icon: {
     position: "absolute",
-    top: -15, // 👈 ajusta según el tamaño de tu botón
+    top: -15, // ajusta según el tamaño de tu botón
     width: "70%",
     height: "70%",
-    zIndex:10
+    zIndex: 30,
+    shadowColor: "rgba(66, 62, 61, 0.6)",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 10,
   },
 });
