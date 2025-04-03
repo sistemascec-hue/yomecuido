@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   Dimensions,
   Pressable,
-  Alert
+  Alert,
+  SafeAreaView
 } from "react-native";
 import { useAuthContext } from "../../contexts/AuthContext";
 import Navbar from "../../components/Navbar";
@@ -25,7 +26,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-const { width, height } = Dimensions.get("window");
 
 // Mapas disponibles
 const mapBackgrounds = [
@@ -133,25 +133,25 @@ export default function HomeScreen() {
 
             <GamePoint
               number={1}
-              position={{ top: "80%", left: "70%" }}
+              position={{ top: "80%", left: "65%" }}
               icon={require("../../assets/images/map_icons/book1.png")}
               estado={mapaProgress.nivel1}
             />
             <GamePoint
               number={2}
-              position={{ top: "60%", left: "17%" }}
+              position={{ top: "60%", left: "15%" }}
               icon={require("../../assets/images/map_icons/game1.png")}
               estado={mapaProgress.nivel2}
             />
             <GamePoint
               number={3}
-              position={{ top: "40%", left: "70%" }}
+              position={{ top: "40%", left: "65%" }}
               icon={require("../../assets/images/map_icons/film1.png")}
               estado={mapaProgress.nivel3}
             />
             <GamePoint
               number={3}
-              position={{ top: "70%", left: "31%" }}
+              position={{ top: "20%", left: "15%" }}
               icon={require("../../assets/images/map_icons/star1.png")}
               estado={mapaProgress.nivel3}
             />
@@ -223,7 +223,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Navbar />
       <View>
         {/* Mensaje de bienvenida */}
@@ -287,7 +287,7 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

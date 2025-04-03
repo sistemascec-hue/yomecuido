@@ -43,15 +43,15 @@ export default function GamePoint({ number, icon, size = 90, position, estado = 
       {/* Botón principal con efecto 3D */}
       {/* "#ebe8e6", "#f2eeeb" */}
       <LinearGradient
-        colors={isCompletado ? ["#37ff00","#5ff566"] : ["#ebe8e6", "#f2eeeb"]}
+        colors={isCompletado ? ["#37ff00", "#5ff566"] : ["#ebe8e6", "#f2eeeb"]}
         style={[
           styles.button,
           isCompletado && { borderColor: "#fc9905" }
         ]}
-        >
-       {/* rgba(245, 158, 118, 0.6) */}
+      >
+        {/* rgba(245, 158, 118, 0.6) */}
         <LinearGradient
-          colors={["rgba(248, 105, 9, 0.6)", "transparent"]}
+          colors={["rgb(240, 103, 40)", "transparent"]}
           style={styles.lightEffect}
         />
         {!icon && <Text style={styles.text}>{number}</Text>}
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
       { rotateX: "60deg" }, // Inclinación en X
       { rotateY: "0deg" }, // Inclinación en Y
     ],
-    zIndex:10,
+    zIndex: 10,
   },
   button: {
     width: "100%",
@@ -115,12 +115,14 @@ const styles = StyleSheet.create({
   },
   glowLayer: {
     position: "absolute",
-    width: "90%",
-    height: "70%",
-    top: "-25%",
+    width: "100%",
+    height: "100%",
+    top: "-21%",
     backgroundColor: "white",
-    borderTopEndRadius: 10,
-    borderTopStartRadius: 10,
+    borderTopEndRadius: 15,
+    borderTopStartRadius: 15,
+    borderBottomEndRadius: 24,
+    borderBottomStartRadius: 24,
     opacity: 0.6,
     shadowColor: "#fff",
     shadowOffset: { width: 0, height: 0 },
