@@ -4,14 +4,22 @@ import colors from "../theme/colors";
 import fonts from "../theme/fonts";
 import { useState } from "react";
 
-const MyButton = ({ text, href }) => {
+const MyButton = ({ text, href, onPress }) => {
   const [theme, setTheme] = useState("light");
   const themeFonts = fonts(theme);
   const router = useRouter();
 
+  const handlePress = () => {
+    if (onPress) {
+      onPress(); // Ejecutar función personalizada
+    } else if (href) {
+      router.push(href); // Navegación por href
+    }
+  };
+
   return (
     <Pressable
-      onPress={() => router.push(href)}
+      onPress={handlePress}
       style={({ pressed }) => [
         styles.button,
         pressed && styles.buttonPressed,
@@ -21,7 +29,6 @@ const MyButton = ({ text, href }) => {
     </Pressable>
   );
 };
-
 const styles = StyleSheet.create({
   button: {
     backgroundColor: colors.light.buttonBackground,

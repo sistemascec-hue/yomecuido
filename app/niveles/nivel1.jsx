@@ -1,114 +1,136 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import CuentoInteractivo from "../../components/CuentoInteractivo";
+import PreguntasInteractivas from "../../components/PreguntasInteractivas";
+import dataNivelLibro1 from "../../data/dataNivelLibro1";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function Nivel1() {
+export default function NivelLibro1() {
+  const [fase, setFase] = useState("cuento"); // "cuento" → "preguntas" → "final"
+  const [resultados, setResultados] = useState({ aciertos: 0, fallos: 0 });
   const router = useRouter();
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
 
-  const handleSelect = (option) => {
-    setSelectedAnswer(option);
+  const manejarFinalPreguntas = (aciertos, fallos) => {
+    setResultados({ aciertos, fallos });
+    setFase("final");
   };
 
-  const checkAnswer = () => {
-    if (selectedAnswer === "opcionCorrecta") {
-      alert("¡Correcto! Has aprendido sobre contraseñas seguras.");
-      router.push("/home"); // Redirigir al home
-    } else {
-      alert("Incorrecto, intenta de nuevo.");
-    }
-  };
+  if (fase === "cuento") {
+    return (
+      <CuentoInteractivo
+        historia={dataNivelLibro1.historia}
+        onFinish={() => setFase("preguntas")}
+      />
+    );
+  }
+
+  if (fase === "preguntas") {
+    return (
+      <PreguntasInteractivas
+        preguntas={dataNivelLibro1.preguntas}
+        retroalimentacion={dataNivelLibro1.retroalimentacion}
+        onFinish={manejarFinalPreguntas}
+      />
+    );
+  }
+
+  const total = resultados.aciertos + resultados.fallos;
+  const paso = resultados.aciertos / total >= 0.5;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🔐 Historia: Una contraseña segura</Text>
-      <Text style={styles.story}>
-        Pedro usaba la misma contraseña para todas sus cuentas: "pedro123".
-        Un día, un hacker adivinó su contraseña y accedió a su correo.
-        ¿Cómo podría haber evitado esto?
-      </Text>
+    <View style={styles.finalContainer}>
+      <Text style={styles.finalTitle}>¡Nivel Completado!</Text>
+      <Text style={styles.finalSubtitle}>Has demostrado tus conocimientos 🧠</Text>
 
-      {/* Opciones de respuesta */}
-      <Pressable
-        style={[
-          styles.option,
-          selectedAnswer === "incorrecta1" && styles.selected,
-        ]}
-        onPress={() => handleSelect("incorrecta1")}
-      >
-        <Text style={styles.optionText}>A) Usando "pedro2025"</Text>
-      </Pressable>
+      <View style={styles.resultadoBox}>
+        <View style={styles.resultadoFila}>
+          <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />
+          <Text style={styles.resultadoTexto}>Aciertos: {resultados.aciertos}</Text>
+        </View>
+        <View style={styles.resultadoFila}>
+          <Ionicons name="close-circle" size={24} color="#F44336" />
+          <Text style={styles.resultadoTexto}>Fallos: {resultados.fallos}</Text>
+        </View>
+      </View>
 
-      <Pressable
-        style={[
-          styles.option,
-          selectedAnswer === "opcionCorrecta" && styles.selected,
-        ]}
-        onPress={() => handleSelect("opcionCorrecta")}
-      >
-        <Text style={styles.optionText}>B) Creando una contraseña con mayúsculas, números y símbolos</Text>
-      </Pressable>
-
-      <Pressable
-        style={[
-          styles.option,
-          selectedAnswer === "incorrecta2" && styles.selected,
-        ]}
-        onPress={() => handleSelect("incorrecta2")}
-      >
-        <Text style={styles.optionText}>C) Escribiendo su contraseña en una libreta</Text>
-      </Pressable>
-
-      <Pressable style={styles.button} onPress={checkAnswer}>
-        <Text style={styles.buttonText}>Comprobar respuesta</Text>
-      </Pressable>
+      {paso ? (
+        <Pressable style={styles.botonFinal} onPress={() => router.replace("/home")}>
+          <Text style={styles.botonTextoFinal}>Continuar</Text>
+        </Pressable>
+      ) : (
+        <>
+          <Pressable
+            style={[styles.botonFinal, { backgroundColor: "#f7931e" }]}
+            onPress={() => setFase("cuento")}
+          >
+            <Text style={styles.botonTextoFinal}>Volver a Intentar</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.botonFinal, { backgroundColor: "#666", marginTop: 10 }]}
+            onPress={() => router.replace("/home")}
+          >
+            <Text style={styles.botonTextoFinal}>Salir del Nivel</Text>
+          </Pressable>
+        </>
+      )}
     </View>
   );
 }
 
-// 🎨 Estilos
 const styles = StyleSheet.create({
-  container: {
+  finalContainer: {
     flex: 1,
-    backgroundColor: "#f4f4f4",
-    alignItems: "center",
     justifyContent: "center",
-    padding: 20,
+    alignItems: "center",
+    backgroundColor: "#1E1E2A",
+    padding: 30,
   },
-  title: {
-    fontSize: 24,
+  finalTitle: {
+    fontSize: 30,
     fontWeight: "bold",
+    color: "#8B5CF6",
+    textAlign: "center",
     marginBottom: 10,
   },
-  story: {
-    fontSize: 16,
+  finalSubtitle: {
+    fontSize: 18,
+    color: "#ccc",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 30,
   },
-  option: {
-    backgroundColor: "#fff",
-    padding: 10,
-    marginVertical: 5,
-    width: "80%",
-    borderRadius: 8,
+  resultadoBox: {
+    backgroundColor: "#2A2A3D",
+    padding: 20,
+    borderRadius: 16,
+    width: "100%",
+    maxWidth: 320,
+    marginBottom: 30,
+  },
+  resultadoFila: {
+    flexDirection: "row",
     alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#ccc",
+    gap: 10,
+    marginBottom: 10,
   },
-  selected: {
-    backgroundColor: "#FFD700",
-  },
-  optionText: {
-    fontSize: 16,
-  },
-  button: {
-    marginTop: 20,
-    backgroundColor: "#0288D1",
-    padding: 10,
-    borderRadius: 8,
-  },
-  buttonText: {
+  resultadoTexto: {
+    fontSize: 18,
     color: "#fff",
-    fontSize: 16,
+  },
+  botonFinal: {
+    backgroundColor: "#4CAF50",
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+  },
+  botonTextoFinal: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
