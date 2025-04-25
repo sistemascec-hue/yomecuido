@@ -113,8 +113,8 @@ export default function useAuth() {
       // console.log("Usuario con email verificado, iniciando sesión...");
       onSuccess(); // Permitir acceso si el correo está verificado
     } catch (error) {
-      console.log("Código de error:", error.code);
-      console.log("Mensaje de error:", error.message);
+      // console.log("Código de error:", error.code);
+      // console.log("Mensaje de error:", error.message);
 
       switch (error.code) {
         case "auth/user-not-found":
@@ -147,7 +147,7 @@ export default function useAuth() {
         [{ text: "OK" }]
       );
     } catch (error) {
-      console.error("Error al enviar restablecimiento de contraseña:", error);
+      // console.error("Error al enviar restablecimiento de contraseña:", error);
       switch (error.code) {
         case "auth/user-not-found":
           setAuthError("No hay cuenta asociada a este correo.");
@@ -259,13 +259,13 @@ export default function useAuth() {
         // Cerrar sesión después de reenviar el correo y redirigir manualmente al login
         setTimeout(async () => {
           await auth.signOut();
-          console.log("Sesión cerrada después del reenvío de correo.");
+          // console.log("Sesión cerrada después del reenvío de correo.");
         }, 1000);
       } else {
         Alert.alert("Tu cuenta ya está verificada.");
       }
     } catch (error) {
-      console.error("Error al reenviar verificación:", error.message);
+      // console.error("Error al reenviar verificación:", error.message);
       if (error.code === "auth/too-many-requests") {
         Alert.alert(
           "Demasiados intentos",

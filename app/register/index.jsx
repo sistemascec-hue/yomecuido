@@ -13,8 +13,9 @@ import useAuth from "../../hooks/useAuth";
 import colors from "../../theme/colors";
 import fonts from "../../theme/fonts";
 import InputField from "../../components/InputField";
-import { UserIcon, LockIcon, EmailIcon } from "../../components/Icons";
-
+import { UserIcon, LockIcon, EmailIcon, BackIcon } from "../../components/Icons";
+import MyButton from "../../components/Button";
+import IconButton from "../../components/IconButton";
 export default function RegisterScreen() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -30,6 +31,9 @@ export default function RegisterScreen() {
       style={styles.background}
       resizeMode="cover"
     >
+<IconButton onPress={() => router.back()} style={styles.salirIcon}>
+  <BackIcon color="black" />
+</IconButton>
       
           <View style={styles.InputField}>
             <Image
@@ -87,22 +91,17 @@ export default function RegisterScreen() {
             {errors.confirmPassword && (
               <Text style={styles.errorText}>{errors.confirmPassword}</Text>
             )}
-            <Pressable
-              style={styles.button}
-              onPress={() => {
-                Keyboard.dismiss();
-                register(email, password, username, confirmPassword, () =>
-                  router.replace("/login")
-                );
-              }}
-            >
-              <Text style={styles.buttonText}>
-                {loading ? "Registrando..." : "Registrarse"}
-              </Text>
-            </Pressable>
+            
+            <MyButton
+            text={loading ? "Registrando..." : "Registrarse"}
+            onPress={()=>{
+              Keyboard.dismiss();
+              register(email, password, username, confirmPassword, () =>
+                router.replace("/login")
+              );
+            }}
+            />
           </View>
-       
-      
     </ImageBackground>
     </Pressable>
   );
@@ -113,6 +112,12 @@ const styles = StyleSheet.create({
     // justifyContent: "center",
     // alignItems: "center",
   },
+  salirIcon: {
+    position: "absolute",
+    top: 30,
+    left: 10,
+    zIndex: 10,
+},
   background: {
     flex: 1,
     justifyContent: "center",

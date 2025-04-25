@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 20,
     alignItems: "center",
+    
     shadowColor: "#2E1C42",
     elevation: 2,
   },

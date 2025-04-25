@@ -9,6 +9,7 @@ import {
   Image,
   SafeAreaView
 } from "react-native";
+import { useBlockBackButton } from "../hooks/useBlockBackButton";
 import { useRouter } from "expo-router";
 import colors from "../theme/colors";
 import fonts from "../theme/fonts";
@@ -22,6 +23,7 @@ export default function Welcome() {
   const [isLoaded, setIsLoaded] = useState(false); // Estado para controlar la carga
   const [showContent, setShowContent] = useState(false);
   const { user, authLoading } = useAuthContext();
+  useBlockBackButton();
   useEffect(() => {
     if (!authLoading) {
       if (user) {

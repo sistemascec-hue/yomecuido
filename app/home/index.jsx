@@ -20,6 +20,7 @@ import fonts from "../../theme/fonts";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons"; // Asegúrate de instalar @expo/vector-icons si no lo tienes
 // import { Animated } from "react-native";
+import { useBlockBackButton } from "../../hooks/useBlockBackButton";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -53,6 +54,8 @@ export default function HomeScreen() {
   const fadeAnim = useSharedValue(1);
   const scaleAnim = useSharedValue(1);
   const getMapaKey = (index) => `mapa${index + 1}`;
+
+  useBlockBackButton();
   useEffect(() => {
     if (!authLoading && !user) {
       router.replace("/login");
@@ -150,10 +153,10 @@ export default function HomeScreen() {
               estado={mapaProgress.nivel3}
             />
             <GamePoint
-              number={3}
+              number={4}
               position={{ top: "20%", left: "15%" }}
               icon={require("../../assets/images/map_icons/star1.png")}
-              estado={mapaProgress.nivel3}
+              estado={mapaProgress.nivel4}
             />
           </>
         );
@@ -347,7 +350,6 @@ const styles = StyleSheet.create({
   navButtonDisabled: {
     opacity: 0.5,
   },
-
   navButtonPressed: {
     backgroundColor: "rgba(255,255,255,0.4)",
   },

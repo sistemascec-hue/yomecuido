@@ -2,7 +2,7 @@
 const fonts = (theme) => ({
   text: {
     fontFamily: "sugo-extra-light",
-    fontSize: 18,
+    fontSize: 20,
     letterSpacing: 1.5,
   },
   title: {
@@ -13,11 +13,10 @@ const fonts = (theme) => ({
     fontFamily: "sugo-trial",
     fontSize: 24,
     letterSpacing: 1.5,
-    
   },
   subtitle2: {
     fontFamily: "sugo-trial",
-    fontSize: 20,
+    fontSize: 21,
   },
   button: {
     fontFamily: "sugo-trial",

@@ -1,16 +1,34 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet, ImageBackground } from "react-native";
 import { useRouter } from "expo-router";
 import CuentoInteractivo from "../../components/CuentoInteractivo";
 import PreguntasInteractivas from "../../components/PreguntasInteractivas";
 import dataNivelLibro1 from "../../data/dataNivelLibro1";
-import { Ionicons } from "@expo/vector-icons";
+import { CheckIcon, CheckIconfail } from "../../components/Icons";
+import MyButton from "../../components/Button";
+import { doc, updateDoc } from "firebase/firestore";
+import {db, auth} from "../../firebase";  
 
 export default function NivelLibro1() {
   const [fase, setFase] = useState("cuento"); // "cuento" → "preguntas" → "final"
   const [resultados, setResultados] = useState({ aciertos: 0, fallos: 0 });
   const router = useRouter();
 
+  const completarNivel = async () => {
+    try {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+  
+      await updateDoc(userRef, {
+        "progress.mapa1.nivel1": "completado",
+        "progress.mapa1.nivel2": "desbloqueado",
+      });
+  
+      router.replace("/home"); // Redirige al home después de guardar
+    } catch (error) {
+      console.error("Error al actualizar progreso:", error);
+    }
+  };
+  
   const manejarFinalPreguntas = (aciertos, fallos) => {
     setResultados({ aciertos, fallos });
     setFase("final");
@@ -39,52 +57,56 @@ export default function NivelLibro1() {
   const paso = resultados.aciertos / total >= 0.5;
 
   return (
-    <View style={styles.finalContainer}>
+    <ImageBackground
+            source={require("../../assets/images/backgrounds/background3.webp")}
+            style={styles.finalContainer}
+            resizeMode="cover"
+          >
+      <View style={styles.overlay}>
       <Text style={styles.finalTitle}>¡Nivel Completado!</Text>
       <Text style={styles.finalSubtitle}>Has demostrado tus conocimientos 🧠</Text>
 
       <View style={styles.resultadoBox}>
         <View style={styles.resultadoFila}>
-          <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />
+          <CheckIcon color="#4CAF50" />
           <Text style={styles.resultadoTexto}>Aciertos: {resultados.aciertos}</Text>
         </View>
         <View style={styles.resultadoFila}>
-          <Ionicons name="close-circle" size={24} color="#F44336" />
+          <CheckIconfail color="#F44336" />
           <Text style={styles.resultadoTexto}>Fallos: {resultados.fallos}</Text>
         </View>
       </View>
 
       {paso ? (
-        <Pressable style={styles.botonFinal} onPress={() => router.replace("/home")}>
-          <Text style={styles.botonTextoFinal}>Continuar</Text>
-        </Pressable>
+        <MyButton
+        text="Continuar"
+        onPress={completarNivel}
+        />
+      
       ) : (
         <>
-          <Pressable
-            style={[styles.botonFinal, { backgroundColor: "#f7931e" }]}
+          <MyButton
+            text="Volver a Intentar"
             onPress={() => setFase("cuento")}
-          >
-            <Text style={styles.botonTextoFinal}>Volver a Intentar</Text>
-          </Pressable>
-          <Pressable
-            style={[styles.botonFinal, { backgroundColor: "#666", marginTop: 10 }]}
+            customStyles={{ backgroundColor: "#f7931e" }}
+          />
+          <MyButton
+            text="Salir del Nivel"
             onPress={() => router.replace("/home")}
-          >
-            <Text style={styles.botonTextoFinal}>Salir del Nivel</Text>
-          </Pressable>
+            customStyles={{ backgroundColor: "#666", marginTop: 10 }}
+          />
         </>
       )}
-    </View>
+
+      </View>
+      
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   finalContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#1E1E2A",
-    padding: 30,
   },
   finalTitle: {
     fontSize: 30,
@@ -132,5 +154,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 30,
+    padding: 24,
+    backgroundColor: "rgba(0,0,0,0.5)",
   },
 });

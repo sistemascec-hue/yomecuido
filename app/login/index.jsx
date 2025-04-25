@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -17,16 +17,18 @@ import globalStyles from "../../constants/globalStyles";
 import InputField from "../../components/InputField";
 import { EmailIcon, LockIcon } from "../../components/Icons";
 import Button from "../../components/Button";
-import { auth } from "../../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { sendEmailVerification, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import CustomAlert from "../../components/CustomAlert";
+import { useBlockBackButton } from "../../hooks/useBlockBackButton";
 // import ResendEmailButton from "../../components/ResendEmailButton"
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
+  const [logoutMessage, setLogoutMessage] = useState("");
   const [password, setPassword] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
+  const [showAlert, setShowAlert] = useState(false);
   const {
     login,
     errors,
@@ -36,9 +38,19 @@ export default function LoginScreen() {
     secondsLeft,
     isDisabled
   } = useAuth();
-
-
-
+  useBlockBackButton();
+  
+  useEffect(() => {
+    const checkLogoutMessage = async () => {
+      const message = await AsyncStorage.getItem("logoutMessage");
+      if (message) {
+        setLogoutMessage(message);
+        setShowAlert(true);
+        await AsyncStorage.removeItem("logoutMessage");
+      }
+    };
+    checkLogoutMessage();
+  }, []);
 
   useEffect(() => {
     const checkSuccessMessage = async () => {
@@ -65,6 +77,14 @@ export default function LoginScreen() {
         </View>
 
         <View style={globalStyles.container}>
+        <CustomAlert
+        visible={showAlert}
+        onClose={() => setShowAlert(false)}
+        title="Sesión cerrada"
+        message={logoutMessage}
+        success={true}
+        primaryButtonText="Entendido"
+      />
           <View style={styles.InputField}>
             <Image
               source={require("../../assets/images/logos/logo1.webp")}
@@ -93,28 +113,20 @@ export default function LoginScreen() {
               onChangeText={setPassword}
             />
             {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-            <Text style={[fonts().subtitle,styles.forgotPasswordText]} onPress={() => router.push("/resetpassword")}>
+            <Text style={[fonts().subtitle, styles.forgotPasswordText]} onPress={() => router.push("/resetpassword")}>
               ¿Olvidaste tu contraseña?
             </Text>
             {/* Mostrar el temporizador antes de que el usuario haga clic en "Reenviar" */}
             {authError !== "Debes verificar tu correo antes de iniciar sesión." && (
-              <Pressable
-              style={({ pressed }) => [
-                styles.button,
-                pressed && styles.buttonPressed,
-                isDisabled && styles.disabledButton,
-              ]}
-              onPress={() => {
-                Keyboard.dismiss();
-                login(email, password, () => router.push("/home"));
-              }}
-              disabled={isDisabled}
-            >
-              <Text style={styles.buttonText}>
-                {loading ? "Cargando..." : "Iniciar Sesión"}
-              </Text>
-            </Pressable>
-            
+              <Button
+                text={loading ? "Cargando..." : "Iniciar Sesión"}
+                onPress={() => {
+                  Keyboard.dismiss();
+                  login(email, password, () => router.replace("/home"));
+                }}
+                disabled={isDisabled}
+              />
+
             )}
 
             {authError === "Debes verificar tu correo antes de iniciar sesión." && (
@@ -122,16 +134,15 @@ export default function LoginScreen() {
                 <Text style={styles.timerText}>
                   {isDisabled ? `Volver a reenviar en ${secondsLeft}s` : "Reenviar correo de verificación"}
                 </Text>
-                <Pressable
-                  style={[styles.resendButton, isDisabled && styles.disabledButton]}
+                <Button
+                  text="Reenviar correo"
                   onPress={async () => {
-                    await resendVerificationEmail(email, password); // Primero reenvía el correo
-                    router.replace("/login"); // Luego redirige a Login
+                    await resendVerificationEmail(email, password);
+                    router.replace("/login");
                   }}
                   disabled={isDisabled}
-                >
-                  <Text style={styles.resendText}>Reenviar correo</Text>
-                </Pressable>
+                  variant="secondary"
+                />
               </View>
             )}
 
@@ -158,11 +169,11 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     transform: [{ scale: 0.97 }],
   },
-  
+
   disabledButton: {
     opacity: 0.4,
   },
-  
+
   container: {
     flex: 1,
     justifyContent: "center",
@@ -266,6 +277,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 10,
     textDecorationLine: "underline",
-}
+  }
 });
 

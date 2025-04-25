@@ -19,6 +19,9 @@ import {
 } from "./Icons";
 import { useAuthContext } from "../contexts/AuthContext";
 import colors from "../theme/colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 const logo = require("../assets/images/small_logos/logo_small1.webp");
 
 export default function Navbar() {
@@ -58,12 +61,12 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await logout(); // Usamos la función del contexto
-      Alert.alert("Sesión cerrada", "Has cerrado sesión correctamente.");
-      router.replace("/login");
+      await logout(); // Lógica de cerrar sesión
+      await AsyncStorage.setItem("logoutMessage", "Has cerrado sesión correctamente.");
+      router.replace("/login"); // Ir a Login
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
-      Alert.alert("Error", "No se pudo cerrar sesión. Intenta de nuevo.");
+      Alert.alert("Error", "No se pudo cerrar sesión.");
     }
   };
   return (

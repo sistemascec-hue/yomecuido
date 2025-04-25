@@ -30,6 +30,7 @@ export default function CuentoInteractivo({ historia, onFinish }) {
                             : "Siguiente →"
                     }
                     onPress={avanzar}
+                    variant="cuento"
                 />
             </View>
         </ImageBackground>

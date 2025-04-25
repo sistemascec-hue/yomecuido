@@ -46,3 +46,18 @@ export const PeopleIcon = (props) => (
 export const MoreIcon = (props) => (
 <Ionicons name="arrow-down-circle" size={24} color="black" {...props}/>
 );
+export const CheckIcon = (props) => (
+  <Ionicons name="checkmark-circle" size={24} color="black" {...props}/>
+)
+export const CheckIconfail = (props) => (
+  <Ionicons name="close-circle" size={24} color="black" {...props}/>
+)
+export const BackIcon = (props) => (
+  <Ionicons name="arrow-back-circle" size={30} color="black" {...props}/>
+)
+export const EyeIcon = (props) => (
+  <Ionicons name="eye" size={24} color="black" {...props}/>
+)
+export const EyeOff = (props) => (
+  <Ionicons name="eye-off" size={24} color="black" {...props}/>
+)
