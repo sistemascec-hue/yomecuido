@@ -21,6 +21,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons"; // Asegúrate de instalar @expo/vector-icons si no lo tienes
 // import { Animated } from "react-native";
 import { useBlockBackButton } from "../../hooks/useBlockBackButton";
+import ConexionGamePoints from "../../components/ConexionGamePoints";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -28,9 +29,9 @@ import Animated, {
 } from "react-native-reanimated";
 
 
-// Mapas disponibles
+// Fondos mapas 
 const mapBackgrounds = [
-  require("../../assets/images/backgrounds/background3.webp"),
+  require("../../assets/images/backgrounds/fondojuego1.webp"),
   require("../../assets/images/backgrounds/fondojuego2.webp"),
   require("../../assets/images/backgrounds/fondojuego3.webp"),
   require("../../assets/images/backgrounds/fondojuego4.webp"),
@@ -54,7 +55,13 @@ export default function HomeScreen() {
   const fadeAnim = useSharedValue(1);
   const scaleAnim = useSharedValue(1);
   const getMapaKey = (index) => `mapa${index + 1}`;
-
+  // const puntos = [
+  //   { x: 300, y: 600 },
+  //   { x: 100, y: 450 },
+  //   { x: 300, y: 300 }, 
+  //   { x: 100, y: 170 }, 
+  // ];
+  
   useBlockBackButton();
   useEffect(() => {
     if (!authLoading && !user) {
@@ -95,7 +102,7 @@ export default function HomeScreen() {
     }
   };
 
-  // Crear la animacion de la trancision
+  // Crear la animacion de la transision
   const changeMapWithAnimation = (next) => {
     // Reduce tamaño y desaparece antes del cambio
     scaleAnim.value = withTiming(0.85, { duration: 600 });
@@ -136,25 +143,25 @@ export default function HomeScreen() {
 
             <GamePoint
               number={1}
-              position={{ top: "80%", left: "65%" }}
+              position={{ top: "85%", left: "23%" }}
               icon={require("../../assets/images/map_icons/book1.png")}
               estado={mapaProgress.nivel1}
             />
             <GamePoint
               number={2}
-              position={{ top: "60%", left: "15%" }}
+              position={{ top: "60%", left: "48%" }}
               icon={require("../../assets/images/map_icons/game1.png")}
               estado={mapaProgress.nivel2}
             />
             <GamePoint
               number={3}
-              position={{ top: "40%", left: "65%" }}
+              position={{ top: "40%", left: "20%" }}
               icon={require("../../assets/images/map_icons/film1.png")}
               estado={mapaProgress.nivel3}
             />
             <GamePoint
               number={4}
-              position={{ top: "20%", left: "15%" }}
+              position={{ top: "20%", left: "45%" }}
               icon={require("../../assets/images/map_icons/star1.png")}
               estado={mapaProgress.nivel4}
             />
@@ -163,60 +170,74 @@ export default function HomeScreen() {
       case 1:
         return (
           <>
-             <GamePoint
-              number={4}
-              position={{ top: "85%", left: "31%" }}
-              estado={mapaProgress.nivel3}
-            />
-             <GamePoint
+            <GamePoint
               number={5}
-              position={{ top: "60%", left: "31%" }}
+              position={{ top: "87%", left: "47%" }}
+              icon={require("../../assets/images/map_icons/book2.png")}
+              estado={mapaProgress.nivel1} // este es el nivel5.jsx
+            />
+            <GamePoint
+              number={6}
+              position={{ top: "65%", left: "60%" }}
+              icon={require("../../assets/images/map_icons/game2.png")}
+              estado={mapaProgress.nivel2}
+            />
+            <GamePoint
+              number={7}
+              position={{ top: "50%", left: "10%" }}
+              icon={require("../../assets/images/map_icons/film2.png")}
               estado={mapaProgress.nivel3}
             />
-             <GamePoint
-              number={6}
-              position={{ top: "40%", left: "31%" }}
-              estado={mapaProgress.nivel3}
+            <GamePoint
+              number={8}
+              position={{ top: "20%", left: "25%" }}
+              icon={require("../../assets/images/map_icons/star2.png")}
+              estado={mapaProgress.nivel4}
             />
           </>
         );
       case 2:
         return (
           <>
-             <GamePoint
-              number={7}
-              position={{ top: "85%", left: "31%" }}
-              estado={mapaProgress.nivel3}
-            />
-             <GamePoint
-              number={8}
-              position={{ top: "60%", left: "31%" }}
-              estado={mapaProgress.nivel3}
-            />
-             <GamePoint
+            <GamePoint
               number={9}
+              position={{ top: "85%", left: "31%" }}
+              estado={mapaProgress.nivel1}
+            />
+            <GamePoint
+              number={10}
+              position={{ top: "60%", left: "31%" }}
+              estado={mapaProgress.nivel9}
+            />
+            <GamePoint
+              number={11}
               position={{ top: "40%", left: "31%" }}
-              estado={mapaProgress.nivel3}
+              estado={mapaProgress.nivel10}
+            />
+            <GamePoint
+              number={12}
+              position={{ top: "40%", left: "31%" }}
+              estado={mapaProgress.nivel11}
             />
           </>
         );
       case 3:
         return (
           <>
-             <GamePoint
+            <GamePoint
               number={10}
               position={{ top: "85%", left: "31%" }}
-              estado={mapaProgress.nivel3}
+              estado={mapaProgress.nivel11}
             />
-             <GamePoint
+            <GamePoint
               number={11}
               position={{ top: "60%", left: "31%" }}
-              estado={mapaProgress.nivel3}
+              estado={mapaProgress.nivel12}
             />
-             <GamePoint
+            <GamePoint
               number={12}
               position={{ top: "40%", left: "31%" }}
-              estado={mapaProgress.nivel3}
+              estado={mapaProgress.nivel13}
             />
           </>
         );
@@ -245,7 +266,24 @@ export default function HomeScreen() {
             style={styles.mapBackground}
             resizeMode="cover"
           >
-            <View style={styles.gamePointsContainer}>{renderGamePoints()}</View>
+            <View style={styles.gamePointsContainer}>
+  {/* Dibujar conexiones automáticamente */}
+  {/* {puntos.map((punto, index) => {
+    if (index < puntos.length - 1) {
+      return (
+        <ConexionGamePoints
+          key={index}
+          start={punto}
+          end={puntos[index + 1]}
+        />
+      );
+    }
+    return null;
+  })} */}
+
+  {renderGamePoints()}
+</View>
+
           </ImageBackground>
         </Animated.View>
 
