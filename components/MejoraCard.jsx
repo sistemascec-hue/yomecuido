@@ -7,16 +7,16 @@ import {
   StyleSheet,
   Animated,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons"; // Ícono para "ver más" y "ver menos"
+import { AntDesign } from "@expo/vector-icons";
 import colors from "../theme/colors";
 
-export default function MejoraCard  ({ tip }){
+export default function MejoraCard({ tip }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const animatedHeight = useRef(new Animated.Value(0)).current;
 
   const toggleExpand = () => {
     Animated.timing(animatedHeight, {
-      toValue: isExpanded ? 0 : 150, // Expande o colapsa la tarjeta
+      toValue: isExpanded ? 0 : tip.details.length * 30 + 20, // Dinámico según cantidad de detalles
       duration: 300,
       useNativeDriver: false,
     }).start();
@@ -25,19 +25,23 @@ export default function MejoraCard  ({ tip }){
 
   return (
     <View style={styles.card}>
-      <Text style={styles.tipTitle}>
-         {tip.title}
-      </Text>
-      <Image source={tip.image} style={styles.image} />
+      <Text style={styles.tipTitle}>{tip.title}</Text>
+
+      <View style={styles.imageContainer}>
+        <Image source={tip.image} style={styles.image} resizeMode="cover" />
+      </View>
+
       <Pressable style={styles.button} onPress={toggleExpand}>
-        <Text style={styles.buttonText}>Ver más</Text>
-        <AntDesign name={isExpanded ? "up" : "down"} size={20} color="white" />
+        <Text style={styles.buttonText}>
+          {isExpanded ? "Ver menos" : "Ver más"}
+        </Text>
+        <AntDesign name={isExpanded ? "up" : "down"} size={20} color="#fff" />
       </Pressable>
 
-      {/* Animación para la ventana emergente */}
+      {/* Vista expandible */}
       <Animated.View style={[styles.expandedView, { height: animatedHeight }]}>
         {isExpanded && (
-          <View>
+          <View style={styles.detailsContainer}>
             {tip.details.map((detail, index) => (
               <Text key={index} style={styles.tipDetail}>
                 {detail}
@@ -53,56 +57,68 @@ export default function MejoraCard  ({ tip }){
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#FFBC42",
-    borderRadius: 10,
-    padding: 15,
+    borderRadius: 16,
+    padding: 20,
     alignItems: "center",
-    width: "90%",
-    marginBottom: 20,
-    shadowColor: "#00000",
-    shadowOffset: { width: 2, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
+    width: "100%",
+    marginBottom: 25,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
   },
   tipTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontFamily: "sugo-trial",
     textAlign: "center",
-    marginBottom: 10,
+    marginBottom: 15,
+    color: "#2E1C42",
+  },
+  imageContainer: {
+    width: 260,
+    height: 160,
+    borderRadius: 15,
+    overflow: "hidden",
+    marginBottom: 15,
+    borderWidth: 2,
+    borderColor: "#2E1C42",
   },
   image: {
-    width: 250,
-    height: 150,
-    borderRadius: 10,
-    marginBottom: 10,
+    width: "100%",
+    height: "100%",
   },
   button: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#2E1C42",
     paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    paddingHorizontal: 25,
+    borderRadius: 12,
     marginTop: 10,
+    marginBottom: 5,
   },
   buttonText: {
     color: "white",
     fontSize: 16,
     fontFamily: "sugo-trial",
-    marginRight: 10,
+    marginRight: 8,
   },
   expandedView: {
     overflow: "hidden",
+    width: "100%",
     backgroundColor: "#2E1C42",
-    borderRadius: 10,
+    borderRadius: 12,
     marginTop: 10,
-    paddingHorizontal: 15,
-    paddingVertical: 5,
+  },
+  detailsContainer: {
+    padding: 5,
   },
   tipDetail: {
-    color: "white",
-    fontSize: 12,
-    marginVertical: 4,
+    color: "#fff",
+    fontSize: 14,
     fontFamily: "roboto-bold",
+    marginBottom: 6,
+    lineHeight: 20,
   },
 });
