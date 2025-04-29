@@ -46,14 +46,14 @@ export default function Navbar() {
     if (isMenuOpen) {
       Animated.timing(menuHeight, {
         toValue: 0,
-        duration: 500,
+        duration: 200,
         useNativeDriver: false,
       }).start(() => setIsMenuOpen(false));
     } else {
       setIsMenuOpen(true);
       Animated.timing(menuHeight, {
         toValue: totalHeight,
-        duration: 1000,
+        duration: 200,
         useNativeDriver: false,
       }).start();
     }
@@ -83,7 +83,7 @@ export default function Navbar() {
 
       {/* Menú desplegable animado */}
       {isMenuOpen && (
-        <Animated.View style={[styles.menu, { height: menuHeight }]}>
+        <Animated.View style={[styles.menu, { maxHeight: menuHeight }]}>
           {menuOptions.map((item, index) => (
             <Pressable
               key={index}
@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
     right: 0,
     width: "100%",
     backgroundColor: "#4B0076",
-    overflow: "hidden", // Evita que el contenido se desborde
   },
   logoutText: {
     fontFamily: "sugo-trial",
